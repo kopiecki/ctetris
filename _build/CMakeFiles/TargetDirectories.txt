@@ -1,0 +1,5 @@
+/home/dk/p/git/sw/ctetris/_build/CMakeFiles/edit_cache.dir
+/home/dk/p/git/sw/ctetris/_build/CMakeFiles/rebuild_cache.dir
+/home/dk/p/git/sw/ctetris/_build/app/CMakeFiles/ctetris.dir
+/home/dk/p/git/sw/ctetris/_build/app/CMakeFiles/edit_cache.dir
+/home/dk/p/git/sw/ctetris/_build/app/CMakeFiles/rebuild_cache.dir
