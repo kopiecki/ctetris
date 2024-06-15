@@ -8,7 +8,7 @@
 #ifndef TET_H_INCLUDED
 #define TET_H_INCLUDED
 
-#include "vec2.h"
+#include "win.h"
 
 enum tet_tp {
         tet_tp_i,
@@ -18,7 +18,6 @@ enum tet_tp {
         tet_tp_t,
         tet_tp_s,
         tet_tp_z,
-        tet_tp_end,
 };
 
 enum rot {
@@ -31,10 +30,20 @@ enum rot {
 struct tet {
         enum tet_tp tp;
         enum rot rot;
-        struct vec2 pos;
+        enum color c;
+        struct vec2 origin;
 };
 
+struct tet tet_create(enum tet_tp tp, enum color c);
 
+void tet_draw(const struct tet* const t, struct win* const w);
+void tet_erase(const struct tet* const t, struct win* const w);
+
+bool tet_move_down(struct tet* const t, struct win* const w);
+void tet_move_left(struct tet* const t, struct win* const w);
+void tet_move_right(struct tet* const t, struct win* const w);
+
+void tet_rotate(struct tet* const t, struct win* const w);
 
 #endif /* TET_H_INCLUDED */
 

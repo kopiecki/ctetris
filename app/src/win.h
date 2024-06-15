@@ -8,19 +8,27 @@
 #ifndef WIN_H_INCLUDED
 #define WIN_H_INCLUDED
 
-#include <curses.h>
+#include <ncurses.h>
+#include <stdbool.h>
 
 #include "common.h"
-#include "vec2.h"
 
-struct win_cfg {
-        struct vec2 dim;
+struct win {
+        void* p;
+        enum color* grid;
         struct vec2 pos;
-        bool border;
+        struct vec2 dim;
+        const bool border;
 };
 
-WINDOW* win_create(const struct win_cfg* const cfg);
-void win_destroy(WINDOW* const win);
+int win_create(struct win* const w);
+void win_destroy(struct win* const w);
+void win_refresh(struct win* const w);
+
+static inline enum color* const win_at(struct win* const w, u32 row, u32 col)
+{
+        return &w->grid[row * w->dim.row + col];
+}
 
 #endif /* WIN_H_INCLUDED */
 
