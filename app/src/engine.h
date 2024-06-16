@@ -9,6 +9,7 @@
 #define ENGINE_H_INCLUDED_
 
 int engine_init(void);
+void engine_deinit(void);
 
 #endif /* ENGINE_H_INCLUDED_ */
 

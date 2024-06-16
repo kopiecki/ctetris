@@ -31,19 +31,23 @@ struct tet {
         enum tet_tp tp;
         enum rot rot;
         enum color c;
-        struct vec2 origin;
+        struct vec2 o;
 };
-
-struct tet tet_create(enum tet_tp tp, enum color c);
 
 void tet_draw(const struct tet* const t, struct win* const w);
 void tet_erase(const struct tet* const t, struct win* const w);
 
-bool tet_move_down(struct tet* const t, struct win* const w);
-void tet_move_left(struct tet* const t, struct win* const w);
-void tet_move_right(struct tet* const t, struct win* const w);
-
+bool tet_move(struct tet* const t, struct win* const w, enum dir d);
 void tet_rotate(struct tet* const t, struct win* const w);
+
+struct tet tet_spawn(const struct win* const w);
+
+inline static void tet_respawn(
+    const struct win* const w, struct tet* const dir, const struct tet* const src)
+{
+        *dir       = *src;
+        dir->o.col = w->dim.col / 2 - 2;
+}
 
 #endif /* TET_H_INCLUDED */
 

@@ -9,6 +9,7 @@
 #define COMMON_H_INCLUDED
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #define ARR_SIZE(arr) sizeof(arr) / sizeof(arr[0])
 
@@ -41,6 +42,11 @@ struct vec2 {
         u32 row;
         u32 col;
 };
+
+inline static int get_rn(int lower, int upper)
+{
+        return (rand() % (upper - lower + 1)) + lower;
+}
 
 #endif /* COMMON_H_INCLUDED */
 

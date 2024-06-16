@@ -7,7 +7,7 @@
 
 #include <ncurses.h>
 #include <stdlib.h>
-
+#include <time.h>
 #include "common.h"
 
 static const u8 colors[] = {
@@ -18,21 +18,25 @@ static const u8 colors[] = {
 static int engine_col_init()
 {
         const bool has = has_colors();
-        if (has == FALSE)
+        if (has == FALSE) {
                 return ERR;
+        }
 
         int err = use_default_colors();
-        if (err == ERR)
+        if (err == ERR) {
                 return ERR;
+        }
 
         err = start_color();
-        if (err == ERR)
+        if (err == ERR) {
                 return ERR;
+        }
 
         for (u8 i = 0; i < ARR_SIZE(colors); i++) {
                 err = init_pair(i + 1, colors[i], -1);
-                if (err == ERR)
+                if (err == ERR) {
                         return ERR;
+                }
         }
 
         return OK;
@@ -47,15 +51,18 @@ int engine_init(void)
         curs_set(0);
         timeout(1);
 
+        srand(time(NULL));
+
         atexit((void (*)(void))endwin);
 
-        int error = engine_col_init();
-        if (error == -1)
-                return -1;
+        int err = engine_col_init();
+        if (err == ERR) {
+                return ERR;
+        }
 
         refresh();
 
-        return 0;
+        return OK;
 }
 
 /**** END OF FILE ****/
