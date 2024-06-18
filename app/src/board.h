@@ -13,18 +13,18 @@
 
 struct board {
         struct win* w;
-        enum color* grid;
+        struct cell* grid;
 };
 
-int board_create(struct board* const b);
+int board_create(struct board* const b, struct win* const w);
 void board_render(const struct board* const b);
 
-static inline enum color* const board_at(struct board* const b, struct vec2 p)
+static inline struct cell* const board_at(struct board* const b, struct vec2 p)
 {
         return &b->grid[p.row * b->w->dim.row + p.col];
 }
 
-static inline enum color const board_atc(const struct board* const b, struct vec2 p)
+static inline struct cell const board_atc(const struct board* const b, struct vec2 p)
 {
         return b->grid[p.row * b->w->dim.row + p.col];
 }

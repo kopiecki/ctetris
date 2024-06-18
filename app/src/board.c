@@ -12,22 +12,25 @@
 
 #include "common.h"
 
-static inline void board_put(const struct board* const b, struct vec2 p)
+static void board_clear(struct board* const b)
 {
-        const enum color c = board_atc(b, p);
-        if (c == color_none)
-                win_put(b->w, EMPTY, p, c);
-        else
-                win_put(b->w, BLOCK, p, c);
+        struct vec2 p = { 0, 0 };
+        for (; p.row < b->w->dim.row; p.row++)
+                for (p.col = 0; p.col < b->w->dim.col; p.col++)
+                        *board_at(b, p) = empty;
 }
 
-int board_create(struct board* const b)
+int board_create(struct board* const b, struct win* const w)
 {
-        assert(b != NULL);
+        assert(w != NULL);
 
-        b->grid = calloc(b->w->dim.row * b->w->dim.col, sizeof(enum color));
+        b->grid = calloc(w->dim.row * w->dim.col, sizeof(struct cell));
         if (b->grid == NULL)
                 return ERR;
+
+        b->w = w;
+
+        board_clear(b);
 
         return OK;
 }
@@ -41,7 +44,7 @@ void board_render(const struct board* const b)
         struct vec2 p = { 1, 1 };
         for (; p.row < b->w->dim.row - 1; p.row++)
                 for (p.col = 1; p.col < b->w->dim.col - 1; p.col++)
-                        board_put(b, p);
+                        win_put(b->w, p, board_atc(b, p));
 }
 
 /**** END OF FILE ****/

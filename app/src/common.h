@@ -38,6 +38,16 @@ enum dir {
         dir_left,
 };
 
+struct cell {
+        u32 ch;
+        enum color c;
+};
+
+static const struct cell empty = {
+        .ch = EMPTY,
+        .c  = color_none,
+};
+
 struct vec2 {
         u32 row;
         u32 col;

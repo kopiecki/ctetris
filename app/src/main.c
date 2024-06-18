@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#include "board.h"
 #include "common.h"
 #include "engine.h"
 #include "tet.h"
@@ -24,7 +25,7 @@ int main(void)
         if (err == ERR)
                 return ERR;
 
-        struct win board = {
+        struct win game = {
                 .dim    = { 50, 50 },
                 .pos    = { 0, 0 },
                 .border = true,
@@ -32,52 +33,58 @@ int main(void)
 
         struct win score = {
                 .dim    = { 4, 20 },
-                .pos    = { 1, board.dim.col + 1 },
+                .pos    = { 1, game.dim.col + 1 },
                 .border = false,
         };
 
         struct win next = {
                 .dim    = { 8, 10 },
-                .pos    = { score.dim.row - 1, board.dim.col + 4 },
+                .pos    = { score.dim.row - 1, game.dim.col + 4 },
                 .border = false,
         };
 
         struct win ctrl = {
                 .dim    = { 10, 25 },
-                .pos    = { next.dim.row + 2, board.dim.col + 1 },
+                .pos    = { next.dim.row + 2, game.dim.col + 1 },
                 .border = false,
         };
 
         struct win logs = {
                 .dim    = { 10, 50 },
-                .pos    = { board.dim.row, 0 },
+                .pos    = { game.dim.row, 0 },
                 .border = false,
         };
 
-        err = win_create(&board, true);
+        struct board gameb, nextb;
+
+        err = win_create(&game);
         if (err == ERR) {
                 return ERR;
         }
 
-        err = win_create(&next, true);
-        if (err == ERR) {
+        err = board_create(&gameb, &game);
+        if (err == ERR)
                 return ERR;
-        }
 
-        err = win_create(&score, false);
-        if (err == ERR) {
+        err = win_create(&next);
+        if (err == ERR)
                 return ERR;
-        }
 
-        err = win_create(&ctrl, false);
-        if (err == ERR) {
+        err = board_create(&nextb, &next);
+        if (err == ERR)
                 return ERR;
-        }
 
-        err = win_create(&logs, false);
-        if (err == ERR) {
+        err = win_create(&score);
+        if (err == ERR)
                 return ERR;
-        }
+
+        err = win_create(&ctrl);
+        if (err == ERR)
+                return ERR;
+
+        err = win_create(&logs);
+        if (err == ERR)
+                return ERR;
 
         win_print(
             &ctrl,
@@ -86,10 +93,10 @@ int main(void)
             "w/up/j: rotate\n"
             "space: hard drop");
 
-        struct tet t0 = tet_spawn(&board);
-        struct tet t1 = tet_spawn(&next);
+        struct tet t0 = tet_spawn(&gameb);
+        struct tet t1 = tet_spawn(&nextb);
 
-        tet_draw(&t1, &next);
+        tet_draw(&t1, &nextb);
 
         bool moved    = true;
         i32 delay     = DELAY_INIT;
@@ -98,7 +105,7 @@ int main(void)
         while (true) {
                 delay -= DELAY_STEP;
                 if (delay < 0) {
-                        moved = tet_move(&t0, &board, dir_down);
+                        moved = tet_move(&t0, &gameb, dir_down);
                         delay = INT16_MAX;
                 }
 
@@ -106,31 +113,34 @@ int main(void)
                         case 'a':
                         case 'h':
                         case KEY_LEFT:
-                                tet_move(&t0, &board, dir_left);
+                                tet_move(&t0, &gameb, dir_left);
                                 break;
                         case 'd':
                         case 'l':
                         case KEY_RIGHT:
-                                tet_move(&t0, &board, dir_right);
+                                tet_move(&t0, &gameb, dir_right);
                                 break;
                         case 'w':
                         case 'j':
                         case KEY_UP:
-                                tet_rotate(&t0, &board);
+                                tet_rotate(&t0, &gameb);
                                 break;
                         default:
                                 break;
                 }
 
                 if (!moved) {
-                        tet_respawn(&board, &t0, &t1);
-                        tet_erase(&t1, &next);
-                        t1 = tet_spawn(&next);
-                        tet_draw(&t1, &next);
+                        tet_respawn(&gameb, &t0, &t1);
+                        tet_erase(&t1, &nextb);
+                        t1 = tet_spawn(&nextb);
+                        tet_draw(&t1, &nextb);
                         moved = true;
                 }
 
-                win_refresh(&board);
+                board_render(&gameb);
+                board_render(&nextb);
+
+                win_refresh(&game);
                 win_refresh(&next);
                 win_refresh(&score);
                 win_refresh(&logs);

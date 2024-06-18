@@ -15,64 +15,22 @@
 
 #include "common.h"
 
-static void win_fill_cell(struct win* const w, struct vec2 p)
-{
-        assert(w != NULL);
-        assert(w->grid != NULL);
-
-        const enum color c = win_atc(w, p);
-        if (c != color_none) {
-                wattron(w->p, COLOR_PAIR(c));
-                mvwaddch(w->p, p.row, p.col, BLOCK);
-                wattroff(w->p, COLOR_PAIR(c));
-        } else {
-                mvwaddch(w->p, p.row, p.col, EMPTY);
-        }
-}
-
-static void win_fill(struct win* const w)
-{
-        assert(w != NULL);
-        assert(w->p != NULL);
-        assert(w->grid != NULL);
-
-        for (u32 row = 1; row < w->dim.row - 1; row++)
-                for (u32 col = 1; col < w->dim.col - 1; col++)
-                        win_fill_cell(w, (struct vec2) { row, col });
-}
-
-int win_create(struct win* const w, bool use_grid)
+int win_create(struct win* const w)
 {
         assert(w != NULL);
 
         w->p = newwin(w->dim.row, w->dim.col, w->pos.row, w->pos.col);
-        if (w->p == NULL) {
+        if (w->p == NULL)
                 return ERR;
-        }
 
         int error = 0;
         if (w->border) {
                 error = box(w->p, 0, 0);
-                if (error == ERR) {
+                if (error == ERR)
                         return ERR;
-                }
         }
 
-        error = wrefresh(w->p);
-        if (error == ERR) {
-                return ERR;
-        }
-
-        if (use_grid) {
-                w->grid = calloc(w->dim.row * w->dim.col, sizeof(enum color));
-                if (w->grid == NULL) {
-                        return ERR;
-                }
-        } else {
-                w->grid = NULL;
-        }
-
-        return error;
+        return win_refresh(w);
 }
 
 void win_print(struct win* const w, const char* fmt, ...)
@@ -88,14 +46,14 @@ void win_print(struct win* const w, const char* fmt, ...)
         va_end(args);
 }
 
-void win_put(struct win* const w, u32 ch, struct vec2 p, enum color c)
+void win_put(struct win* const w, struct vec2 p, struct cell c)
 {
         assert(w != NULL);
         assert(w->p != NULL);
 
-        wattron(w->p, COLOR_PAIR(c));
-        mvwaddch(w->p, p.row, p.col, ch);
-        wattroff(w->p, COLOR_PAIR(c));
+        wattron(w->p, COLOR_PAIR(c.c));
+        mvwaddch(w->p, p.row, p.col, c.ch);
+        wattroff(w->p, COLOR_PAIR(c.c));
 }
 
 void win_destroy(struct win* const w)
@@ -103,23 +61,14 @@ void win_destroy(struct win* const w)
         assert(w != NULL);
         assert(w->p != NULL);
 
-        if (w->grid != NULL) {
-                free(w->grid);
-        }
-
-        wrefresh(w->p);
         delwin(w->p);
 }
 
-void win_refresh(struct win* const w)
+int win_refresh(struct win* const w)
 {
         assert(w != NULL);
 
-        if (w->grid != NULL) {
-                win_fill(w);
-        }
-
-        wrefresh(w->p);
+        return wrefresh(w->p);
 }
 
 /**** END OF FILE ****/

@@ -1,5 +1,5 @@
 set(target "ctetris")
-set(sources src/win.c src/engine.c src/tet.c src/main.c)
+set(sources src/win.c src/board.c src/engine.c src/tet.c src/main.c)
 
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})

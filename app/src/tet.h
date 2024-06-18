@@ -8,7 +8,7 @@
 #ifndef TET_H_INCLUDED
 #define TET_H_INCLUDED
 
-#include "win.h"
+#include "board.h"
 
 enum tet_tp {
         tet_tp_i,
@@ -34,19 +34,19 @@ struct tet {
         struct vec2 o;
 };
 
-void tet_draw(const struct tet* const t, struct win* const w);
-void tet_erase(const struct tet* const t, struct win* const w);
+void tet_draw(const struct tet* const t, struct board* const w);
+void tet_erase(const struct tet* const t, struct board* const w);
 
-bool tet_move(struct tet* const t, struct win* const w, enum dir d);
-void tet_rotate(struct tet* const t, struct win* const w);
+bool tet_move(struct tet* const t, struct board* const w, enum dir d);
+void tet_rotate(struct tet* const t, struct board* const w);
 
-struct tet tet_spawn(const struct win* const w);
+struct tet tet_spawn(const struct board* const w);
 
 inline static void tet_respawn(
-    const struct win* const w, struct tet* const dir, const struct tet* const src)
+    const struct board* const b, struct tet* const dir, const struct tet* const src)
 {
         *dir       = *src;
-        dir->o.col = w->dim.col / 2 - 2;
+        dir->o.col = b->w->dim.col / 2 - 2;
 }
 
 #endif /* TET_H_INCLUDED */
