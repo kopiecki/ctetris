@@ -20,36 +20,32 @@
 #define TET_INIT_COL 20
 #define TET_INIT_ROW 1
 
-static inline bool tet_is(const struct tet* const t, u8 row, u8 col)
+static inline bool tet_is(const struct tet* const t, struct vec2 p)
 {
-        return tet_srs_lut[t->tp][t->rot][row][col];
+        return tet_srs_lut[t->tp][t->rot][p.row][p.col];
 }
 
 static void tet_fill_with(
-    const struct tet* const t, struct win* const w, u8 row, u8 col, enum color c)
+    const struct tet* const t, struct win* const w, struct vec2 p, enum color c)
 {
         assert(t != NULL);
         assert(w != NULL);
 
-        if (tet_is(t, row, col)) {
-                *win_at(w, t->o.row + row, t->o.col + col) = c;
-        }
+        if (tet_is(t, p))
+                *win_at(w, vec2_add_v(p, t->o)) = c;
 }
 
 static bool tet_in_bounds(
-    const struct tet* const t, const struct win* const w, u32 row, u32 col)
+    const struct tet* const t, const struct win* const w, struct vec2 p)
 {
         assert(t != NULL);
         assert(w != NULL);
 
-        const u32 dcol = col + t->o.col;
-        const u32 drow = row + t->o.row;
+        const struct vec2 dpos = vec2_add_v(p, t->o);
 
-        if (tet_is(t, row, col)) {
-                if (!win_in_bounds(w, drow, dcol) || win_atc(w, drow, dcol)) {
+        if (tet_is(t, p))
+                if (!win_in_bounds(w, dpos) || win_atc(w, dpos))
                         return false;
-                }
-        }
 
         return true;
 }
@@ -59,13 +55,11 @@ static bool tet_can_move(const struct tet* const t, struct win* const w)
         assert(t != NULL);
         assert(w != NULL);
 
-        for (u8 row = 0; row < NUM_ROWS; row++) {
-                for (u8 col = 0; col < NUM_COLS; col++) {
-                        if (!tet_in_bounds(t, w, row, col)) {
+        struct vec2 p = { 0, 0 };
+        for (; p.row < NUM_ROWS; p.row++)
+                for (p.col = 0; p.col < NUM_COLS; p.col++)
+                        if (!tet_in_bounds(t, w, p))
                                 return false;
-                        }
-                }
-        }
 
         return true;
 }
@@ -103,11 +97,10 @@ void tet_draw(const struct tet* const t, struct win* const w)
         assert(t != NULL);
         assert(w != NULL);
 
-        for (u8 row = 0; row < NUM_ROWS; row++) {
-                for (u8 col = 0; col < NUM_COLS; col++) {
-                        tet_fill_with(t, w, row, col, t->c);
-                }
-        }
+        struct vec2 p = { 0, 0 };
+        for (; p.row < NUM_ROWS; p.row++)
+                for (p.col = 0; p.col < NUM_COLS; p.col++)
+                        tet_fill_with(t, w, p, t->c);
 }
 
 void tet_erase(const struct tet* const t, struct win* const w)
@@ -115,11 +108,10 @@ void tet_erase(const struct tet* const t, struct win* const w)
         assert(t != NULL);
         assert(w != NULL);
 
-        for (u8 row = 0; row < NUM_ROWS; row++) {
-                for (u8 col = 0; col < NUM_COLS; col++) {
-                        tet_fill_with(t, w, row, col, color_none);
-                }
-        }
+        struct vec2 p = { 0, 0 };
+        for (; p.row < NUM_ROWS; p.row++)
+                for (p.col = 0; p.col < NUM_COLS; p.col++)
+                        tet_fill_with(t, w, p, color_none);
 }
 
 bool tet_move(struct tet* const t, struct win* const w, enum dir d)
@@ -131,9 +123,8 @@ bool tet_move(struct tet* const t, struct win* const w, enum dir d)
         tet_move_by_dir(t, d);
 
         const bool can_move = tet_can_move(t, w);
-        if (!can_move) {
+        if (!can_move)
                 tet_move_by_dir(t, ~d);
-        }
 
         tet_draw(t, w);
 
@@ -148,9 +139,8 @@ void tet_rotate(struct tet* const t, struct win* const w)
         tet_erase(t, w);
 
         t->rot = (t->rot + 1) % 4;
-        if (!tet_can_move(t, w)) {
+        if (!tet_can_move(t, w))
                 t->rot = (t->rot - 1) % 4;
-        }
 
         tet_draw(t, w);
 }

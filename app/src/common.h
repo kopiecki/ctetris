@@ -43,6 +43,16 @@ struct vec2 {
         u32 col;
 };
 
+static inline struct vec2 vec2(u32 row, u32 col)
+{
+        return (struct vec2) { .row = row, .col = col };
+}
+
+static inline struct vec2 vec2_add_v(const struct vec2 lhs, const struct vec2 rhs)
+{
+        return vec2(lhs.row + rhs.row, lhs.col + rhs.col);
+}
+
 inline static int get_rn(int lower, int upper)
 {
         return (rand() % (upper - lower + 1)) + lower;

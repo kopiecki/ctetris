@@ -15,18 +15,18 @@
 
 #include "common.h"
 
-static void win_fill_cell(struct win* const w, u32 row, u32 col)
+static void win_fill_cell(struct win* const w, struct vec2 p)
 {
         assert(w != NULL);
         assert(w->grid != NULL);
 
-        const enum color c = win_atc(w, row, col);
+        const enum color c = win_atc(w, p);
         if (c != color_none) {
                 wattron(w->p, COLOR_PAIR(c));
-                mvwaddch(w->p, row, col, BLOCK);
+                mvwaddch(w->p, p.row, p.col, BLOCK);
                 wattroff(w->p, COLOR_PAIR(c));
         } else {
-                mvwaddch(w->p, row, col, EMPTY);
+                mvwaddch(w->p, p.row, p.col, EMPTY);
         }
 }
 
@@ -36,11 +36,9 @@ static void win_fill(struct win* const w)
         assert(w->p != NULL);
         assert(w->grid != NULL);
 
-        for (u32 row = 1; row < w->dim.row - 1; row++) {
-                for (u32 col = 1; col < w->dim.col - 1; col++) {
-                        win_fill_cell(w, row, col);
-                }
-        }
+        for (u32 row = 1; row < w->dim.row - 1; row++)
+                for (u32 col = 1; col < w->dim.col - 1; col++)
+                        win_fill_cell(w, (struct vec2) { row, col });
 }
 
 int win_create(struct win* const w, bool use_grid)
@@ -90,13 +88,14 @@ void win_print(struct win* const w, const char* fmt, ...)
         va_end(args);
 }
 
-void win_put(struct win* const w, const struct vec2* const p, u32 c)
+void win_put(struct win* const w, u32 ch, struct vec2 p, enum color c)
 {
         assert(w != NULL);
         assert(w->p != NULL);
-        assert(p != NULL);
 
-        mvwaddch(w->p, p->row, p->col, c);
+        wattron(w->p, COLOR_PAIR(c));
+        mvwaddch(w->p, p.row, p.col, ch);
+        wattroff(w->p, COLOR_PAIR(c));
 }
 
 void win_destroy(struct win* const w)
