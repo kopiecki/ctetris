@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include "engine.h"
+
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
@@ -16,7 +18,7 @@ static const u8 colors[] = {
         COLOR_GREEN, COLOR_RED,    COLOR_WHITE, COLOR_BLACK,
 };
 
-static int engine_col_init()
+static int col_init()
 {
         const bool has = has_colors();
         if (has == FALSE)
@@ -52,7 +54,7 @@ int engine_init(void)
 
         atexit((void (*)(void))endwin);
 
-        int err = engine_col_init();
+        int err = col_init();
         if (err == ERR) {
                 return ERR;
         }
@@ -60,6 +62,10 @@ int engine_init(void)
         refresh();
 
         return OK;
+}
+
+void engine_deinit(void)
+{
 }
 
 /**** END OF FILE ****/

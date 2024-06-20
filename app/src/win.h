@@ -17,7 +17,7 @@ struct win {
         enum color* grid;
         struct vec2 pos;
         struct vec2 dim;
-        const bool border;
+        bool border;
 };
 
 int win_create(struct win* const w);

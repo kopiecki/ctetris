@@ -12,7 +12,7 @@
 
 #include "common.h"
 
-static void board_clear(struct board* const b)
+static void reset(struct board* const b)
 {
         struct vec2 p = { 0, 0 };
         for (; p.row < b->w->dim.row; p.row++)
@@ -22,6 +22,7 @@ static void board_clear(struct board* const b)
 
 int board_create(struct board* const b, struct win* const w)
 {
+        assert(b != NULL);
         assert(w != NULL);
 
         b->grid = calloc(w->dim.row * w->dim.col, sizeof(struct cell));
@@ -30,9 +31,16 @@ int board_create(struct board* const b, struct win* const w)
 
         b->w = w;
 
-        board_clear(b);
+        reset(b);
 
         return OK;
+}
+
+void board_destroy(struct board* const b)
+{
+        assert(b != NULL);
+
+        free(b->grid);
 }
 
 void board_render(const struct board* const b)

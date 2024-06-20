@@ -20,12 +20,12 @@
 #define TET_INIT_COL 20
 #define TET_INIT_ROW 1
 
-static inline bool tet_is(const struct tet* const t, struct vec2 p)
+static inline bool is(const struct tet* const t, struct vec2 p)
 {
         return tet_srs_lut[t->tp][t->rot][p.row][p.col];
 }
 
-static inline struct cell tet_cell(enum color c)
+static inline struct cell cell(enum color c)
 {
         if (c == color_none)
                 return empty;
@@ -36,32 +36,35 @@ static inline struct cell tet_cell(enum color c)
         };
 }
 
-static void tet_fill_with(
-    const struct tet* const t, struct board* const b, struct vec2 p, enum color c)
+static void fill_with(
+        const struct tet* const t,
+        struct board* const b,
+        struct vec2 p,
+        enum color c)
 {
         assert(t != NULL);
         assert(b != NULL);
 
-        if (tet_is(t, p))
-                *board_at(b, vec2_add_v(p, t->o)) = tet_cell(c);
+        if (is(t, p))
+                *board_at(b, vec2_add_v(p, t->o)) = cell(c);
 }
 
-static bool tet_in_bounds(
-    const struct tet* const t, const struct board* const b, struct vec2 p)
+static bool in_bounds(
+        const struct tet* const t, const struct board* const b, struct vec2 p)
 {
         assert(t != NULL);
         assert(b != NULL);
 
         const struct vec2 dpos = vec2_add_v(p, t->o);
 
-        if (tet_is(t, p))
+        if (is(t, p))
                 if (!board_in(b, dpos) || board_atc(b, dpos).c != color_none)
                         return false;
 
         return true;
 }
 
-static bool tet_can_move(const struct tet* const t, struct board* const b)
+static bool can_move(const struct tet* const t, struct board* const b)
 {
         assert(t != NULL);
         assert(b != NULL);
@@ -69,37 +72,37 @@ static bool tet_can_move(const struct tet* const t, struct board* const b)
         struct vec2 p = { 0, 0 };
         for (; p.row < NUM_ROWS; p.row++)
                 for (p.col = 0; p.col < NUM_COLS; p.col++)
-                        if (!tet_in_bounds(t, b, p))
+                        if (!in_bounds(t, b, p))
                                 return false;
 
         return true;
 }
 
-static void tet_move_by_dir(struct tet* const t, int d)
+static void move_by_dir(struct tet* const t, int d)
 {
         assert(t != NULL);
 
         switch (d) {
-                case dir_down:
-                        t->o.row += ROW_STEP;
-                        break;
-                case dir_right:
-                        t->o.col += COL_STEP;
-                        break;
-                case dir_left:
-                        t->o.col -= COL_STEP;
-                        break;
-                case ~dir_down:
-                        t->o.row -= ROW_STEP;
-                        break;
-                case ~dir_left:
-                        t->o.col += COL_STEP;
-                        break;
-                case ~dir_right:
-                        t->o.col -= COL_STEP;
-                        break;
-                default:
-                        break;
+        case dir_down:
+                t->o.row += ROW_STEP;
+                break;
+        case dir_right:
+                t->o.col += COL_STEP;
+                break;
+        case dir_left:
+                t->o.col -= COL_STEP;
+                break;
+        case ~dir_down:
+                t->o.row -= ROW_STEP;
+                break;
+        case ~dir_left:
+                t->o.col += COL_STEP;
+                break;
+        case ~dir_right:
+                t->o.col -= COL_STEP;
+                break;
+        default:
+                break;
         }
 }
 
@@ -111,7 +114,7 @@ void tet_draw(const struct tet* const t, struct board* const b)
         struct vec2 p = { 0, 0 };
         for (; p.row < NUM_ROWS; p.row++)
                 for (p.col = 0; p.col < NUM_COLS; p.col++)
-                        tet_fill_with(t, b, p, t->c);
+                        fill_with(t, b, p, t->c);
 }
 
 void tet_erase(const struct tet* const t, struct board* const b)
@@ -122,7 +125,7 @@ void tet_erase(const struct tet* const t, struct board* const b)
         struct vec2 p = { 0, 0 };
         for (; p.row < NUM_ROWS; p.row++)
                 for (p.col = 0; p.col < NUM_COLS; p.col++)
-                        tet_fill_with(t, b, p, color_none);
+                        fill_with(t, b, p, color_none);
 }
 
 bool tet_move(struct tet* const t, struct board* const b, enum dir d)
@@ -131,15 +134,15 @@ bool tet_move(struct tet* const t, struct board* const b, enum dir d)
         assert(b != NULL);
 
         tet_erase(t, b);
-        tet_move_by_dir(t, d);
+        move_by_dir(t, d);
 
-        const bool can_move = tet_can_move(t, b);
-        if (!can_move)
-                tet_move_by_dir(t, ~d);
+        const bool can = can_move(t, b);
+        if (!can)
+                move_by_dir(t, ~d);
 
         tet_draw(t, b);
 
-        return can_move;
+        return can;
 }
 
 void tet_rotate(struct tet* const t, struct board* const b)
@@ -150,7 +153,7 @@ void tet_rotate(struct tet* const t, struct board* const b)
         tet_erase(t, b);
 
         t->rot = (t->rot + 1) % 4;
-        if (!tet_can_move(t, b))
+        if (!can_move(t, b))
                 t->rot = (t->rot - 1) % 4;
 
         tet_draw(t, b);

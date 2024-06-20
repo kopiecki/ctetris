@@ -42,13 +42,6 @@ void tet_rotate(struct tet* const t, struct board* const w);
 
 struct tet tet_spawn(const struct board* const w);
 
-inline static void tet_respawn(
-    const struct board* const b, struct tet* const dir, const struct tet* const src)
-{
-        *dir       = *src;
-        dir->o.col = b->w->dim.col / 2 - 2;
-}
-
 #endif /* TET_H_INCLUDED */
 
 /**** END OF FILE ****/

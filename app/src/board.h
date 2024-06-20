@@ -17,6 +17,7 @@ struct board {
 };
 
 int board_create(struct board* const b, struct win* const w);
+void board_destroy(struct board* const b);
 void board_render(const struct board* const b);
 
 static inline struct cell* const board_at(struct board* const b, struct vec2 p)
