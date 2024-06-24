@@ -16,6 +16,10 @@
 #define BLOCK ' ' | A_REVERSE
 #define EMPTY ' '
 
+// clang-format off
+#define CELL_EMPTY (struct cell) {EMPTY, color_none}
+// clang-format on
+
 typedef uint8_t u8;
 typedef int32_t i32;
 typedef int64_t i64;
@@ -38,29 +42,19 @@ enum dir {
         dir_left,
 };
 
-struct cell {
-        u32 ch;
-        enum color c;
-};
-
-static const struct cell empty = {
-        .ch = EMPTY,
-        .c  = color_none,
-};
-
 struct vec2 {
         u32 row;
         u32 col;
 };
 
-static inline struct vec2 vec2(u32 row, u32 col)
-{
-        return (struct vec2) { .row = row, .col = col };
-}
+struct cell {
+        u32 ch;
+        enum color c;
+};
 
 static inline struct vec2 vec2_add_v(const struct vec2 lhs, const struct vec2 rhs)
 {
-        return vec2(lhs.row + rhs.row, lhs.col + rhs.col);
+        return (struct vec2) { lhs.row + rhs.row, lhs.col + rhs.col };
 }
 
 inline static int get_rn(int lower, int upper)

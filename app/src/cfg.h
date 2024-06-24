@@ -14,20 +14,33 @@
 #define DELAY_STEP 1000
 #define KEY_ESC    27
 
-static const struct vec2 wgame_dim = { 50, 50 };
-static const struct vec2 wgame_pos = { 0, 0 };
+enum win_tp {
+        wgame,
+        wnext,
+        wscore,
+        wctrl,
+        wlogs,
+        num_wins,
+};
 
-static const struct vec2 wscore_dim = { 4, 20 };
-static const struct vec2 wscore_pos = { 1, wgame_dim.col + 1 };
+enum board_tp {
+        bgame,
+        bnext,
+        num_boards,
+};
 
-static const struct vec2 wnext_dim = { 8, 10 };
-static const struct vec2 wnext_pos = { wscore_dim.row - 1, wgame_dim.col + 4 };
+static const struct vec2 dims[] = {
+        [wgame] = { 50, 50 }, [wnext] = { 8, 10 },  [wscore] = { 4, 20 },
+        [wctrl] = { 10, 25 }, [wlogs] = { 10, 50 },
+};
 
-static const struct vec2 wctrl_dim = { 10, 25 };
-static const struct vec2 wctrl_pos = { wnext_dim.row + 2, wgame_dim.col + 1 };
-
-static const struct vec2 wlogs_dim = { 10, 50 };
-static const struct vec2 wlogs_pos = { wgame_dim.row, 0 };
+static const struct vec2 poses[] = {
+        [wgame]  = { 0, 0 },
+        [wscore] = { 1, dims[wgame].col + 1 },
+        [wnext]  = { dims[wscore].row - 1, dims[wgame].col + 4 },
+        [wctrl]  = { dims[wnext].row + 2, dims[wgame].col + 1 },
+        [wlogs]  = { dims[wgame].row, 0 },
+};
 
 static const char* ctrl_txt =
         "a/left/h: move left\n"

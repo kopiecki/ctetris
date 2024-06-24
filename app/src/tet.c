@@ -12,7 +12,6 @@
 
 #include "common.h"
 #include "tet_srs_lut.h"
-#include "win.h"
 
 #define COL_STEP 2
 #define ROW_STEP 1
@@ -28,7 +27,7 @@ static inline bool is(const struct tet* const t, struct vec2 p)
 static inline struct cell cell(enum color c)
 {
         if (c == color_none)
-                return empty;
+                return CELL_EMPTY;
 
         return (struct cell) {
                 .ch = BLOCK,
@@ -167,7 +166,7 @@ struct tet tet_spawn(const struct board* const b)
                 .c = get_rn(color_cyan, color_red),
                 .o = {
                         .row = 1,
-                        .col = b->w->dim.col / 2 - 4,
+                        .col = getmaxx(b->w) / 2 - 4,
                 },
         };
 }
