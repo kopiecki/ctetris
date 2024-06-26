@@ -34,13 +34,14 @@ struct tet {
         struct vec2 o;
 };
 
-void tet_draw(const struct tet* const t, struct board* const w);
-void tet_erase(const struct tet* const t, struct board* const w);
+void tet_draw(const struct tet* const t, struct board* const b);
+void tet_erase(const struct tet* const t, struct board* const b);
 
-bool tet_move(struct tet* const t, struct board* const w, enum dir d);
-void tet_rotate(struct tet* const t, struct board* const w);
+bool tet_move(struct tet* const t, struct board* const b, enum dir d);
+void tet_rotate(struct tet* const t, struct board* const b);
+void tet_drop(struct tet* const t, struct board* const b);
 
-struct tet tet_spawn(const struct board* const w);
+struct tet tet_spawn(const struct board* const b);
 
 #endif /* TET_H_INCLUDED */
 

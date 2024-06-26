@@ -19,6 +19,8 @@ struct board {
 
 int board_create(struct board* const b);
 void board_destroy(struct board* const b);
+
+u8 board_erase_rows(struct board* const b);
 int board_render(const struct board* const b);
 
 static inline struct cell* const board_at(struct board* const b, struct vec2 p)

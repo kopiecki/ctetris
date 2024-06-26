@@ -158,6 +158,15 @@ void tet_rotate(struct tet* const t, struct board* const b)
         tet_draw(t, b);
 }
 
+void tet_drop(struct tet* const t, struct board* const b)
+{
+        assert(t != NULL);
+        assert(b != NULL);
+
+        while (tet_move(t, b, dir_down))
+                ;
+}
+
 struct tet tet_spawn(const struct board* const b)
 {
         return (struct tet) {

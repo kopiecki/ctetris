@@ -28,11 +28,15 @@ static WINDOW* mkwin(struct vec2 dim, struct vec2 pos, bool border)
         if (w == NULL)
                 return NULL;
 
-        if (border)
-                if (box(w, 0, 0) == ERR)
+        int err = OK;
+        if (border) {
+                err = box(w, 0, 0);
+                if (err < 0)
                         return NULL;
+        }
 
-        if (wrefresh(w) == ERR)
+        err = wrefresh(w);
+        if (err < 0)
                 return NULL;
 
         return w;
@@ -40,49 +44,65 @@ static WINDOW* mkwin(struct vec2 dim, struct vec2 pos, bool border)
 
 static int init_col(void)
 {
+        int err = ERR;
         if (has_colors() == FALSE)
-                return ERR;
+                return err;
 
-        if (use_default_colors() == ERR)
-                return ERR;
+        err = use_default_colors();
+        if (err < 0)
+                return err;
 
-        if (start_color() == ERR)
-                return ERR;
+        err = start_color();
+        if (err < 0)
+                return err;
 
-        for (u8 i = 0; i < ARR_SIZE(colors); i++)
-                if (init_pair(i + 1, colors[i], -1) == ERR)
-                        return ERR;
+        for (u8 i = 0; i < ARR_SIZE(colors); i++) {
+                err = init_pair(i + 1, colors[i], -1);
+                if (err < 0)
+                        return err;
+        }
 
-        return OK;
+        return err;
 }
 
 static int init_env(void)
 {
+        int err = ERR;
         if (initscr() == NULL)
-                return ERR;
+                return err;
 
-        if (cbreak() == ERR)
-                return ERR;
+        err = cbreak();
+        if (err < 0)
+                return err;
 
-        if (keypad(stdscr, 1) == ERR)
-                return ERR;
+        err = keypad(stdscr, 1);
+        if (err < 0)
+                return err;
 
-        if (noecho() == ERR)
-                return ERR;
+        err = noecho();
+        if (err < 0)
+                return err;
 
-        if (curs_set(0) == ERR)
-                return ERR;
+        err = curs_set(0);
+        if (err < 0)
+                return err;
 
         timeout(1);
         srand(time(NULL));
 
-        if (atexit((void (*)(void))endwin) == ERR)
-                return ERR;
+        err = atexit((void (*)(void))endwin);
+        if (err < 0)
+                return err;
 
-        if (init_col() == ERR)
-                return ERR;
+        err = init_col();
+        if (err < 0)
+                return err;
 
-        return wrefresh(stdscr);
+        err = wrefresh(stdscr);
+        if (err < 0)
+                return err;
+
+        return err;
 }
 
 static int create_wins(void)
@@ -104,31 +124,43 @@ static void destroy_wins(void)
 
 static int refresh_wins(void)
 {
-        for (u8 i = 0; i < num_wins; i++)
-                if (wrefresh(wins[i]) == ERR)
-                        return ERR;
+        int err = OK;
+        for (u8 i = 0; i < num_wins; i++) {
+                err = wrefresh(wins[i]);
+                if (err < 0)
+                        return err;
+        }
 
-        return OK;
+        return err;
 }
 
 static int create_boards(void)
 {
+        int err = OK;
         for (u8 i = 0; i < num_boards; i++) {
                 boards[i] = (struct board) { .grid = NULL, .w = wins[i] };
-                if (board_create(&boards[i]) == ERR)
-                        return ERR;
+                err       = board_create(&boards[i]);
+                if (err < 0)
+                        return err;
         }
 
-        return OK;
+        err = scrollok(wins[wlogs], true);
+        if (err < 0)
+                return err;
+
+        return err;
 }
 
 static int render_boards(void)
 {
-        for (u8 i = 0; i < num_boards; i++)
-                if (board_render(&boards[i]) == ERR)
-                        return ERR;
+        int err = OK;
+        for (u8 i = 0; i < num_boards; i++) {
+                err = board_render(&boards[i]);
+                if (err < 0)
+                        return err;
+        }
 
-        return OK;
+        return err;
 }
 
 static void destroy_boards(void)
@@ -148,21 +180,29 @@ static void swap_tets(struct tet* const on_main, struct tet* const on_sec)
 
 static inline int print_score(u32 cnt)
 {
-        if (wclear(wins[wscore]) == ERR)
-                return ERR;
+        int err = mvwprintw(
+                wins[wgame],
+                dims[wgame].row - 1,
+                dims[wgame].col / 2 - 4,
+                "score: %d",
+                cnt);
+        if (err < 0)
+                return err;
 
-        return wprintw(wins[wscore], "score: %d", cnt);
+        return err;
 }
 
 static int update(void)
 {
-        if (render_boards() == ERR)
-                return ERR;
+        int err = render_boards();
+        if (err < 0)
+                return err;
 
-        if (refresh_wins() == ERR)
-                return ERR;
+        err = refresh_wins();
+        if (err < 0)
+                return err;
 
-        return OK;
+        return err;
 }
 
 static void cleanup()
@@ -171,9 +211,23 @@ static void cleanup()
         destroy_boards();
 }
 
+static inline void _log(const char* fmt, ...)
+{
+        va_list args;
+        va_start(args, fmt);
+        wprintw(wins[wlogs], fmt, args);
+        va_end(args);
+}
+
 int game_loop(void)
 {
-        wprintw(wins[wctrl], "%s", ctrl_txt);
+        mvwprintw(wins[wgame], 0, dims[wgame].col / 2 - 4, "ctetris");
+
+        whline(wins[wctrl], ACS_HLINE, dims[wctrl].col);
+        mvwprintw(wins[wctrl], 1, 0, "%s\n", ctrl_txt);
+        whline(wins[wctrl], ACS_HLINE, dims[wctrl].col);
+        mvwprintw(wins[wctrl], 6, 0, "CONSOLE\n");
+        whline(wins[wctrl], ACS_HLINE, dims[wctrl].col);
 
         struct tet on_game = tet_spawn(&boards[bgame]);
         struct tet on_next = tet_spawn(&boards[bnext]);
@@ -183,7 +237,8 @@ int game_loop(void)
         i32 delay     = DELAY_INIT;
         u32 score_cnt = 0;
 
-        if (print_score(score_cnt) == ERR)
+        int err = print_score(score_cnt);
+        if (err < 0)
                 goto exit;
 
         while (true) {
@@ -196,20 +251,34 @@ int game_loop(void)
                 }
 
                 switch (getch()) {
+                case 's':
+                case 'j':
+                case KEY_DOWN:
+                        fell = tet_move(&on_game, &boards[bgame], dir_down);
+                        _log("down!\n");
+                        break;
                 case 'a':
                 case 'h':
                 case KEY_LEFT:
                         tet_move(&on_game, &boards[bgame], dir_left);
+                        _log("left!\n");
                         break;
                 case 'd':
                 case 'l':
                 case KEY_RIGHT:
                         tet_move(&on_game, &boards[bgame], dir_right);
+                        _log("right!\n");
                         break;
                 case 'w':
-                case 'j':
+                case 'k':
                 case KEY_UP:
                         tet_rotate(&on_game, &boards[bgame]);
+                        _log("rotating!\n");
+                        break;
+                case ' ':
+                        tet_drop(&on_game, &boards[bgame]);
+                        fell = false;
+                        _log("hard drop!\n");
                         break;
                 case KEY_ESC:
                         goto exit;
@@ -219,32 +288,42 @@ int game_loop(void)
 
                 if (!fell) {
                         swap_tets(&on_game, &on_next);
-                        if (print_score(score_cnt) == ERR)
+                        score_cnt += board_erase_rows(&boards[bgame]);
+                        err = print_score(score_cnt);
+                        if (err < 0)
                                 goto exit;
                 }
 
-                if (update() == ERR)
+                err = update();
+                if (err < 0)
                         goto exit;
         }
 
 exit:
         cleanup();
 
-        return OK;
+        return err;
 }
 
 int main(int argc, char* argv[])
 {
-        if (init_env() == ERR)
-                return ERR;
+        int err = init_env();
+        if (err < 0)
+                return err;
 
-        if (create_wins() == ERR)
-                return ERR;
+        err = create_wins();
+        if (err < 0)
+                return err;
 
-        if (create_boards() == ERR)
-                return ERR;
+        err = create_boards();
+        if (err < 0)
+                return err;
 
-        return game_loop();
+        err = game_loop();
+        if (err < 0)
+                return err;
+
+        return err;
 }
 
 /**** END OF FILE ****/
