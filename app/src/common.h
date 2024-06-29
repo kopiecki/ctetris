@@ -43,8 +43,8 @@ enum dir {
 };
 
 struct vec2 {
-        u32 row;
-        u32 col;
+        i32 row;
+        i32 col;
 };
 
 struct cell {

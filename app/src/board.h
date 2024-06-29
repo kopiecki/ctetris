@@ -14,7 +14,7 @@
 
 struct board {
         WINDOW* w;
-        struct cell* grid;
+        struct cell** grid;
 };
 
 int board_create(struct board* const b);
@@ -25,12 +25,12 @@ int board_render(const struct board* const b);
 
 static inline struct cell* const board_at(struct board* const b, struct vec2 p)
 {
-        return &b->grid[p.row * getmaxy(b->w) + p.col];
+        return &b->grid[p.row][p.col];
 }
 
 static inline struct cell const board_atc(const struct board* const b, struct vec2 p)
 {
-        return b->grid[p.row * getmaxy(b->w) + p.col];
+        return b->grid[p.row][p.col];
 }
 
 static inline bool board_in(const struct board* const b, struct vec2 p)

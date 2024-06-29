@@ -22,7 +22,7 @@ static const u8 colors[] = {
         COLOR_GREEN, COLOR_RED,    COLOR_WHITE, COLOR_BLACK,
 };
 
-static WINDOW* mkwin(struct vec2 dim, struct vec2 pos, bool border)
+static WINDOW* create_win(struct vec2 dim, struct vec2 pos, bool border)
 {
         WINDOW* w = newwin(dim.row, dim.col, pos.row, pos.col);
         if (w == NULL)
@@ -108,7 +108,7 @@ static int init_env(void)
 static int create_wins(void)
 {
         for (u8 i = 0; i < num_wins; i++) {
-                wins[i] = mkwin(dims[i], poses[i], !i);
+                wins[i] = create_win(dims[i], poses[i], borders[i]);
                 if (wins[i] == NULL)
                         return ERR;
         }
@@ -143,10 +143,6 @@ static int create_boards(void)
                 if (err < 0)
                         return err;
         }
-
-        err = scrollok(wins[wlogs], true);
-        if (err < 0)
-                return err;
 
         return err;
 }
@@ -211,23 +207,33 @@ static void cleanup()
         destroy_boards();
 }
 
-static inline void _log(const char* fmt, ...)
+static int put_info(void)
 {
-        va_list args;
-        va_start(args, fmt);
-        wprintw(wins[wlogs], fmt, args);
-        va_end(args);
+
+        int err = mvwprintw(wins[wgame], 0, dims[wgame].col / 2 - 4, "ctetris");
+        if (err < 0)
+                return err;
+
+        err = wprintw(wins[wctrl], "%s", ctrl_txt);
+        if (err < 0)
+                return err;
+
+        err = mvwprintw(
+                wins[wnext],
+                dims[wnext].row - 1,
+                dims[wnext].col / 2 - 2,
+                "next");
+        if (err < 0)
+                return err;
+
+        return err;
 }
 
 int game_loop(void)
 {
-        mvwprintw(wins[wgame], 0, dims[wgame].col / 2 - 4, "ctetris");
-
-        whline(wins[wctrl], ACS_HLINE, dims[wctrl].col);
-        mvwprintw(wins[wctrl], 1, 0, "%s\n", ctrl_txt);
-        whline(wins[wctrl], ACS_HLINE, dims[wctrl].col);
-        mvwprintw(wins[wctrl], 6, 0, "CONSOLE\n");
-        whline(wins[wctrl], ACS_HLINE, dims[wctrl].col);
+        int err = put_info();
+        if (err < 0)
+                goto exit;
 
         struct tet on_game = tet_spawn(&boards[bgame]);
         struct tet on_next = tet_spawn(&boards[bnext]);
@@ -235,16 +241,17 @@ int game_loop(void)
         tet_draw(&on_next, &boards[bnext]);
 
         i32 delay     = DELAY_INIT;
+        i32 step      = DELAY_STEP;
         u32 score_cnt = 0;
 
-        int err = print_score(score_cnt);
+        err = print_score(score_cnt);
         if (err < 0)
                 goto exit;
 
         while (true) {
                 bool fell = true;
 
-                delay -= DELAY_STEP;
+                delay -= step;
                 if (delay < 0) {
                         fell  = tet_move(&on_game, &boards[bgame], dir_down);
                         delay = INT16_MAX;
@@ -255,31 +262,33 @@ int game_loop(void)
                 case 'j':
                 case KEY_DOWN:
                         fell = tet_move(&on_game, &boards[bgame], dir_down);
-                        _log("down!\n");
                         break;
                 case 'a':
                 case 'h':
                 case KEY_LEFT:
                         tet_move(&on_game, &boards[bgame], dir_left);
-                        _log("left!\n");
                         break;
                 case 'd':
                 case 'l':
                 case KEY_RIGHT:
                         tet_move(&on_game, &boards[bgame], dir_right);
-                        _log("right!\n");
                         break;
                 case 'w':
                 case 'k':
                 case KEY_UP:
                         tet_rotate(&on_game, &boards[bgame]);
-                        _log("rotating!\n");
                         break;
                 case ' ':
                         tet_drop(&on_game, &boards[bgame]);
                         fell = false;
-                        _log("hard drop!\n");
                         break;
+                case '+':
+                        step += DELAY_INC;
+                        break;
+                case '-':
+                        step -= DELAY_INC;
+                        break;
+                case 'q':
                 case KEY_ESC:
                         goto exit;
                 default:

@@ -57,7 +57,7 @@ static bool in_bounds(
         const struct vec2 dpos = vec2_add_v(p, t->o);
 
         if (is(t, p))
-                if (!board_in(b, dpos) || board_atc(b, dpos).c != color_none)
+                if (!board_in(b, dpos) || (board_atc(b, dpos).c != color_none))
                         return false;
 
         return true;
