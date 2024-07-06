@@ -48,7 +48,7 @@ int board_create(struct board* const b)
 
         const struct vec2 max = win_max(b->w);
 
-        b->grid = calloc(max.row, sizeof(struct cell*));
+        b->grid = calloc((u32)max.row, sizeof(struct cell*));
         if (b->grid == NULL)
                 return ERR;
 
