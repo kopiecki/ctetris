@@ -16,6 +16,10 @@
 
 #define B(c) c, c
 
+/**
+ * @brief Tetrominos metrics look-up table using super rotation system
+ * (https://strategywiki.org/wiki/Tetris/Rotation_systems)
+ */
 static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
         [tet_tp_i] =
         {

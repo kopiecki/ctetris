@@ -12,30 +12,6 @@
 
 #include "common.h"
 
-static inline struct vec2 get_limits(WINDOW* const w)
-{
-        return (struct vec2) {
-                .row = getmaxy(w) - 1,
-                .col = getmaxx(w) - 1,
-        };
-}
-
-static inline bool is(struct board* const b, struct vec2 p)
-{
-        struct cell cl = board_atc(b, p);
-        return (cl.c != CELL_EMPTY.c) && (cl.ch != CELL_EMPTY.ch);
-}
-
-static void reset(struct board* const b)
-{
-        struct vec2 p         = { 0, 0 };
-        const struct vec2 max = get_limits(b->w);
-
-        for (; p.row < max.row; p.row++)
-                for (p.col = 1; p.col < max.col; p.col++)
-                        *board_at(b, p) = CELL_EMPTY;
-}
-
 static int board_put(const struct board* const b, struct vec2 p)
 {
         struct cell cl = board_atc(b, p);
@@ -55,12 +31,22 @@ static int board_put(const struct board* const b, struct vec2 p)
         return err;
 }
 
+void board_clear(struct board* const b)
+{
+        struct vec2 p         = { 0, 0 };
+        const struct vec2 max = win_max(b->w);
+
+        for (; p.row < max.row; p.row++)
+                for (p.col = 1; p.col < max.col; p.col++)
+                        *board_at(b, p) = CELL_EMPTY;
+}
+
 int board_create(struct board* const b)
 {
         assert(b != NULL);
         assert(b->w != NULL);
 
-        const struct vec2 max = get_limits(b->w);
+        const struct vec2 max = win_max(b->w);
 
         b->grid = calloc(max.row, sizeof(struct cell*));
         if (b->grid == NULL)
@@ -72,7 +58,7 @@ int board_create(struct board* const b)
                         return ERR;
         }
 
-        reset(b);
+        board_clear(b);
 
         return OK;
 }
@@ -89,7 +75,7 @@ static void lower_down(struct board* const b, u32 row)
 {
         struct vec2 p = { row, 1 };
 
-        const struct vec2 max  = get_limits(b->w);
+        const struct vec2 max  = win_max(b->w);
         const struct vec2 down = { -1, 0 };
 
         for (; p.row > 2; p.row--)
@@ -106,10 +92,10 @@ u8 board_erase_rows(struct board* const b)
         u8 num_erased = 0;
 
         struct vec2 p         = { 1, 1 };
-        const struct vec2 max = get_limits(b->w);
+        const struct vec2 max = win_max(b->w);
 
         for (; p.row < max.row; p.row++) {
-                for (p.col = 1; (p.col < max.col) && is(b, p); p.col++)
+                for (p.col = 1; (p.col < max.col) && board_is(b, p); p.col++)
                         continue;
 
                 if (p.col == max.col) {
@@ -130,17 +116,17 @@ int board_render(const struct board* const b)
         int err = OK;
 
         struct vec2 p         = { 1, 1 };
-        const struct vec2 max = get_limits(b->w);
+        const struct vec2 max = win_max(b->w);
 
         for (; p.row < max.row; p.row++) {
                 for (p.col = 1; p.col < max.col; p.col++) {
                         err = board_put(b, p);
                         if (err < 0)
-                                return ERR;
+                                return err;
                 }
         }
 
-        return OK;
+        return err;
 }
 
 /**** END OF FILE ****/

@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <curses.h>
 
+#include "board.h"
 #include "common.h"
 #include "tet_srs_lut.h"
 
@@ -48,19 +49,18 @@ static void fill_with(
                 *board_at(b, vec2_add_v(p, t->o)) = cell(c);
 }
 
-static bool in_bounds(
+static inline bool in_bounds(
         const struct tet* const t, const struct board* const b, struct vec2 p)
 {
-        assert(t != NULL);
-        assert(b != NULL);
-
         const struct vec2 dpos = vec2_add_v(p, t->o);
+        return !(is(t, p) && (!board_in(b, dpos) || board_is(b, dpos)));
+}
 
-        if (is(t, p))
-                if (!board_in(b, dpos) || (board_atc(b, dpos).c != color_none))
-                        return false;
-
-        return true;
+static inline bool in_rows(
+        const struct tet* const t, const struct board* const b, struct vec2 p)
+{
+        const struct vec2 dpos = vec2_add_v(p, t->o);
+        return !(is(t, p) && (dpos.row < 2));
 }
 
 static bool can_move(const struct tet* const t, struct board* const b)
@@ -125,6 +125,20 @@ void tet_erase(const struct tet* const t, struct board* const b)
         for (; p.row < NUM_ROWS; p.row++)
                 for (p.col = 0; p.col < NUM_COLS; p.col++)
                         fill_with(t, b, p, color_none);
+}
+
+bool tet_fellout(const struct tet* const t, struct board* const b)
+{
+        assert(t != NULL);
+        assert(b != NULL);
+
+        struct vec2 p = { 0, 0 };
+        for (; p.row < NUM_ROWS; p.row++)
+                for (p.col = 0; p.col < NUM_COLS; p.col++)
+                        if (!in_rows(t, b, p))
+                                return true;
+
+        return false;
 }
 
 bool tet_move(struct tet* const t, struct board* const b, enum dir d)

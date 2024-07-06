@@ -10,8 +10,8 @@
 #include <time.h>
 
 #include "board.h"
-#include "cfg.h"
 #include "common.h"
+#include "config.h"
 #include "tet.h"
 
 static WINDOW* wins[num_wins];
@@ -201,6 +201,28 @@ static int update(void)
         return err;
 }
 
+static int clear_all()
+{
+        int err = OK;
+
+        for (u8 i = 0; i < num_wins; i++) {
+                if (i < num_boards)
+                        board_clear(&boards[i]);
+
+                err = wclear(wins[i]);
+                if (err < 0)
+                        return err;
+
+                if (borders[i]) {
+                        err = box(wins[i], 0, 0);
+                        if (err < 0)
+                                return err;
+                }
+        }
+
+        return err;
+}
+
 static void cleanup()
 {
         destroy_wins();
@@ -209,7 +231,6 @@ static void cleanup()
 
 static int put_info(void)
 {
-
         int err = mvwprintw(wins[wgame], 0, dims[wgame].col / 2 - 4, "ctetris");
         if (err < 0)
                 return err;
@@ -229,9 +250,35 @@ static int put_info(void)
         return err;
 }
 
-int game_loop(void)
+static bool restart(u32 score_cnt)
 {
-        int err = put_info();
+        wrefresh(wins[wgame]);
+
+        wprintw(wins[wprompt], "Final score: %d\n", score_cnt);
+        wprintw(wins[wprompt], "Try again? [y/N]");
+
+        wrefresh(wins[wprompt]);
+
+        while (true) {
+                switch (getch()) {
+                case 'y':
+                        return true;
+                case '\n':
+                case 'n':
+                        return false;
+                default:
+                        break;
+                }
+        }
+}
+
+int run_tetris(void)
+{
+        int err = clear_all();
+        if (err < 0)
+                goto exit;
+
+        err = put_info();
         if (err < 0)
                 goto exit;
 
@@ -296,6 +343,13 @@ int game_loop(void)
                 }
 
                 if (!fell) {
+                        if (tet_fellout(&on_game, &boards[bgame])) {
+                                if (restart(score_cnt))
+                                        return run_tetris();
+                                else
+                                        goto exit;
+                        }
+
                         swap_tets(&on_game, &on_next);
                         score_cnt += board_erase_rows(&boards[bgame]);
                         err = print_score(score_cnt);
@@ -328,7 +382,7 @@ int main(int argc, char* argv[])
         if (err < 0)
                 return err;
 
-        err = game_loop();
+        err = run_tetris();
         if (err < 0)
                 return err;
 
