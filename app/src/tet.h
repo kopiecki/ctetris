@@ -68,7 +68,7 @@ void tet_erase(const struct tet* const t, struct board* const b);
  * @return true
  * @return false
  */
-bool tet_fellout(const struct tet* const t, struct board* const b);
+bool tet_fellout(const struct tet* const t);
 
 /**
  * @brief Move tetromino in certain direction

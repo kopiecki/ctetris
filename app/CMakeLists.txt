@@ -6,3 +6,6 @@ include_directories(${CURSES_INCLUDE_DIR})
 
 add_executable(${target} ${sources})
 target_link_libraries(${target} ${CURSES_LIBRARIES})
+
+include(compiler/warnings-c)
+compiler_warnings_install(${target})

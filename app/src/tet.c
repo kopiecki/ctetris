@@ -56,8 +56,7 @@ static inline bool in_bounds(
         return !(is(t, p) && (!board_in(b, dpos) || board_is(b, dpos)));
 }
 
-static inline bool in_rows(
-        const struct tet* const t, const struct board* const b, struct vec2 p)
+static inline bool in_rows(const struct tet* const t, struct vec2 p)
 {
         const struct vec2 dpos = vec2_add_v(p, t->o);
         return !(is(t, p) && (dpos.row < 2));
@@ -127,7 +126,7 @@ void tet_erase(const struct tet* const t, struct board* const b)
                         fill_with(t, b, p, color_none);
 }
 
-bool tet_fellout(const struct tet* const t, struct board* const b)
+bool tet_fellout(const struct tet* const t)
 {
         assert(t != NULL);
         assert(b != NULL);
@@ -135,7 +134,7 @@ bool tet_fellout(const struct tet* const t, struct board* const b)
         struct vec2 p = { 0, 0 };
         for (; p.row < NUM_ROWS; p.row++)
                 for (p.col = 0; p.col < NUM_COLS; p.col++)
-                        if (!in_rows(t, b, p))
+                        if (!in_rows(t, p))
                                 return true;
 
         return false;
@@ -151,7 +150,7 @@ bool tet_move(struct tet* const t, struct board* const b, enum dir d)
 
         const bool can = can_move(t, b);
         if (!can)
-                move_by_dir(t, ~d);
+                move_by_dir(t, (i32)~d);
 
         tet_draw(t, b);
 

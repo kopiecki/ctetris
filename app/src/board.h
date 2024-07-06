@@ -76,7 +76,7 @@ static inline bool board_is(const struct board* const b, struct vec2 p)
  * @param p                     Position of the cell
  * @return struct cell* const   Cell at passed position
  */
-static inline struct cell* const board_at(struct board* const b, struct vec2 p)
+static inline struct cell* board_at(struct board* const b, struct vec2 p)
 {
         return &b->grid[p.row][p.col];
 }
@@ -88,7 +88,7 @@ static inline struct cell* const board_at(struct board* const b, struct vec2 p)
  * @param p                     Position of the cell
  * @return struct cell const   Cell at passed position
  */
-static inline struct cell const board_atc(const struct board* const b, struct vec2 p)
+static inline struct cell board_atc(const struct board* const b, struct vec2 p)
 {
         return b->grid[p.row][p.col];
 }

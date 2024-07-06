@@ -52,8 +52,8 @@ int board_create(struct board* const b)
         if (b->grid == NULL)
                 return ERR;
 
-        for (u32 row = 0; row < max.row; row++) {
-                b->grid[row] = calloc(max.col, sizeof(struct cell));
+        for (i32 row = 0; row < max.row; row++) {
+                b->grid[row] = calloc((u32)max.col, sizeof(struct cell));
                 if (b->grid[row] == NULL)
                         return ERR;
         }
@@ -71,7 +71,7 @@ void board_destroy(struct board* const b)
         free(b->grid);
 }
 
-static void lower_down(struct board* const b, u32 row)
+static void lower_down(struct board* const b, i32 row)
 {
         struct vec2 p = { row, 1 };
 

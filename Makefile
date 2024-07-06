@@ -55,5 +55,5 @@ run:
 clean:
 	$(call log_info,"Cleaning $(project) build directory...")
 	$(at) rm -rf "$(build_dir)"
-	$(call log_info, "DONE: $@")
+	$(call log_info,"DONE: $@")
 .PHONY: clean

@@ -88,7 +88,7 @@ static int init_env(void)
                 return err;
 
         timeout(1);
-        srand(time(NULL));
+        srand((u32)time(NULL));
 
         err = atexit((void (*)(void))endwin);
         if (err < 0)
@@ -343,7 +343,7 @@ int run_tetris(void)
                 }
 
                 if (!fell) {
-                        if (tet_fellout(&on_game, &boards[bgame])) {
+                        if (tet_fellout(&on_game)) {
                                 if (restart(score_cnt))
                                         return run_tetris();
                                 else
@@ -368,7 +368,7 @@ exit:
         return err;
 }
 
-int main(int argc, char* argv[])
+int main(void)
 {
         int err = init_env();
         if (err < 0)
