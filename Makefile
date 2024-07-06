@@ -1,9 +1,3 @@
-#------------------------------------------------------------------------------
-# @author 	Daniel Kopiecki
-# @date   	2023-01-20
-# @brief  	Common automation tasks
-#------------------------------------------------------------------------------
-
 project   := ctetris
 cores     := $(shell nproc)
 root_dir  := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
