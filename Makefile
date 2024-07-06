@@ -21,9 +21,6 @@ cmake_build      := cmake --build . $(cmake_build_flags) -- -j$(cores)
 
 include scripts/logger.mk
 
-default: build
-.PHONY: default
-
 build: | .mk-build-dir
 	$(call log_info,"Building $(project)...")
 	$(at) cd $(build_dir) && \
