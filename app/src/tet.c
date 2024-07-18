@@ -37,10 +37,10 @@ static inline struct cell cell(enum color c)
 }
 
 static void fill_with(
-        const struct tet* const t,
-        struct board* const b,
-        struct vec2 p,
-        enum color c)
+	const struct tet* const t,
+	struct board* const b,
+	struct vec2 p,
+	enum color c)
 {
 	assert(t != NULL);
 	assert(b != NULL);
@@ -50,7 +50,7 @@ static void fill_with(
 }
 
 static inline bool in_bounds(
-        const struct tet* const t, const struct board* const b, struct vec2 p)
+	const struct tet* const t, const struct board* const b, struct vec2 p)
 {
 	const struct vec2 dpos = vec2_add_v(p, t->o);
 	return !(is(t, p) && (!board_in(b, dpos) || board_is(b, dpos)));
@@ -185,7 +185,7 @@ struct tet tet_spawn(const struct board* const b)
 		.tp  = (enum tet_tp)get_rn(tet_tp_i, tet_tp_z),
 		.rot = rot_none,
 		.c   = (enum color)get_rn(color_cyan, color_red),
-		.o   = {.row = 1, .col = getmaxx(b->w) / 2 - 4}
+		.o   = { .row = 1, .col = getmaxx(b->w) / 2 - 4 },
 	};
 }
 

@@ -176,11 +176,12 @@ static void swap_tets(struct tet* const on_main, struct tet* const on_sec)
 
 static inline int print_score(u32 cnt)
 {
-	int err = mvwprintw(wins[wgame],
-	                    dims[wgame].row - 1,
-	                    dims[wgame].col / 2 - 4,
-	                    "score: %d",
-	                    cnt);
+	int err = mvwprintw(
+		wins[wgame],
+		dims[wgame].row - 1,
+		dims[wgame].col / 2 - 4,
+		"score: %d",
+		cnt);
 	if (err < 0)
 		return err;
 
@@ -238,10 +239,11 @@ static int put_info(void)
 	if (err < 0)
 		return err;
 
-	err = mvwprintw(wins[wnext],
-	                dims[wnext].row - 1,
-	                dims[wnext].col / 2 - 2,
-	                "next");
+	err = mvwprintw(
+		wins[wnext],
+		dims[wnext].row - 1,
+		dims[wnext].col / 2 - 2,
+		"next");
 	if (err < 0)
 		return err;
 
@@ -362,7 +364,6 @@ int run_tetris(void)
 
 exit:
 	cleanup();
-
 	return err;
 }
 

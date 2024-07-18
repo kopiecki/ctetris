@@ -3,7 +3,6 @@ Language:                                         Cpp
 BasedOnStyle:                                     LLVM
 
 AccessModifierOffset:                             -4
-AlignArrayOfStructures:                           Left
 AlignAfterOpenBracket:                            AlwaysBreak
 AlignConsecutiveMacros:                           true
 AlignConsecutiveAssignments:                      true
@@ -124,5 +123,5 @@ StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
 TabWidth:                                           8
-UseTab:                                             ForIndentation
+UseTab:                                             ForContinuationAndIndentation
 ...
