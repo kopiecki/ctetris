@@ -14,34 +14,34 @@
  * @brief Tetromino type
  */
 enum tet_tp {
-        tet_tp_i,
-        tet_tp_o,
-        tet_tp_l,
-        tet_tp_j,
-        tet_tp_t,
-        tet_tp_s,
-        tet_tp_z,
+	tet_tp_i,
+	tet_tp_o,
+	tet_tp_l,
+	tet_tp_j,
+	tet_tp_t,
+	tet_tp_s,
+	tet_tp_z,
 };
 
 /**
  * @brief Tetromino rotation
  */
 enum rot {
-        rot_none,
-        rot_left,
-        rot_right,
-        rot_rev,
+	rot_none,
+	rot_left,
+	rot_right,
+	rot_rev,
 };
 
 /**
  * @brief Tetromino representation
  */
 struct tet {
-        enum tet_tp tp;
-        enum rot rot;
-        enum color c;
-        struct vec2 o;
-        chtype ch;
+	enum tet_tp tp;
+	enum rot rot;
+	enum color c;
+	struct vec2 o;
+	chtype ch;
 };
 
 /**

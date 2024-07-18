@@ -13,8 +13,8 @@
 #include "common.h"
 
 struct board {
-        WINDOW* w;
-        struct cell** grid;
+	WINDOW* w;
+	struct cell** grid;
 };
 
 /**
@@ -65,8 +65,8 @@ int board_render(const struct board* const b);
  */
 static inline bool board_is(const struct board* const b, struct vec2 p)
 {
-        struct cell cl = b->grid[p.row][p.col];
-        return (cl.c != CELL_EMPTY.c) && (cl.ch != CELL_EMPTY.ch);
+	struct cell cl = b->grid[p.row][p.col];
+	return (cl.c != CELL_EMPTY.c) && (cl.ch != CELL_EMPTY.ch);
 }
 
 /**
@@ -78,7 +78,7 @@ static inline bool board_is(const struct board* const b, struct vec2 p)
  */
 static inline struct cell* board_at(struct board* const b, struct vec2 p)
 {
-        return &b->grid[p.row][p.col];
+	return &b->grid[p.row][p.col];
 }
 
 /**
@@ -90,7 +90,7 @@ static inline struct cell* board_at(struct board* const b, struct vec2 p)
  */
 static inline struct cell board_atc(const struct board* const b, struct vec2 p)
 {
-        return b->grid[p.row][p.col];
+	return b->grid[p.row][p.col];
 }
 
 /**
@@ -103,9 +103,9 @@ static inline struct cell board_atc(const struct board* const b, struct vec2 p)
  */
 static inline bool board_in(const struct board* const b, struct vec2 p)
 {
-        const struct vec2 max = win_max(b->w);
-        return (p.row > 0) && (p.row < max.row) && (p.col > 0)
-               && (p.col < max.col);
+	const struct vec2 max = win_max(b->w);
+	return (p.row > 0) && (p.row < max.row) && (p.col > 0)
+	       && (p.col < max.col);
 }
 
 #endif /* BOARD_H_INCLUDED_ */

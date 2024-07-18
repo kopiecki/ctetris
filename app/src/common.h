@@ -30,39 +30,39 @@ typedef uint32_t u32;
  * @brief Type of colors we are using within the ctetris game
  */
 enum color {
-        color_none,
-        color_cyan,
-        color_yellow,
-        color_blue,
-        color_magenta,
-        color_green,
-        color_red,
+	color_none,
+	color_cyan,
+	color_yellow,
+	color_blue,
+	color_magenta,
+	color_green,
+	color_red,
 };
 
 /**
  * @brief Generic directions
  */
 enum dir {
-        dir_down,
-        dir_up,
-        dir_right,
-        dir_left,
+	dir_down,
+	dir_up,
+	dir_right,
+	dir_left,
 };
 
 /**
  * @brief Vector with two elements
  */
 struct vec2 {
-        i32 row;
-        i32 col;
+	i32 row;
+	i32 col;
 };
 
 /**
  * @brief Cell within the board (character and its color)
  */
 struct cell {
-        u32 ch;
-        enum color c;
+	u32 ch;
+	enum color c;
 };
 
 /**
@@ -74,7 +74,7 @@ struct cell {
  */
 static inline struct vec2 vec2_add_v(const struct vec2 lhs, const struct vec2 rhs)
 {
-        return (struct vec2) { lhs.row + rhs.row, lhs.col + rhs.col };
+	return (struct vec2) { lhs.row + rhs.row, lhs.col + rhs.col };
 }
 
 /**
@@ -86,7 +86,7 @@ static inline struct vec2 vec2_add_v(const struct vec2 lhs, const struct vec2 rh
  */
 inline static int get_rn(int lower, int upper)
 {
-        return (rand() % (upper - lower + 1)) + lower;
+	return (rand() % (upper - lower + 1)) + lower;
 }
 
 /**
@@ -97,10 +97,10 @@ inline static int get_rn(int lower, int upper)
  */
 static inline struct vec2 win_max(const WINDOW* const w)
 {
-        return (struct vec2) {
-                .row = getmaxy(w) - 1,
-                .col = getmaxx(w) - 1,
-        };
+	return (struct vec2) {
+		.row = getmaxy(w) - 1,
+		.col = getmaxx(w) - 1,
+	};
 }
 
 #endif /* COMMON_H_INCLUDED */

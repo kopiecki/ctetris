@@ -14,119 +14,119 @@
 
 static int board_put(const struct board* const b, struct vec2 p)
 {
-        struct cell cl = board_atc(b, p);
+	struct cell cl = board_atc(b, p);
 
-        int err = wattron(b->w, COLOR_PAIR(cl.c));
-        if (err < 0)
-                return err;
+	int err = wattron(b->w, COLOR_PAIR(cl.c));
+	if (err < 0)
+		return err;
 
-        err = mvwaddch(b->w, p.row, p.col, cl.ch);
-        if (err < 0)
-                return err;
+	err = mvwaddch(b->w, p.row, p.col, cl.ch);
+	if (err < 0)
+		return err;
 
-        err = wattroff(b->w, COLOR_PAIR(cl.c));
-        if (err < 0)
-                return err;
+	err = wattroff(b->w, COLOR_PAIR(cl.c));
+	if (err < 0)
+		return err;
 
-        return err;
+	return err;
 }
 
 void board_clear(struct board* const b)
 {
-        struct vec2 p         = { 0, 0 };
-        const struct vec2 max = win_max(b->w);
+	struct vec2 p         = { 0, 0 };
+	const struct vec2 max = win_max(b->w);
 
-        for (; p.row < max.row; p.row++)
-                for (p.col = 1; p.col < max.col; p.col++)
-                        *board_at(b, p) = CELL_EMPTY;
+	for (; p.row < max.row; p.row++)
+		for (p.col = 1; p.col < max.col; p.col++)
+			*board_at(b, p) = CELL_EMPTY;
 }
 
 int board_create(struct board* const b)
 {
-        assert(b != NULL);
-        assert(b->w != NULL);
+	assert(b != NULL);
+	assert(b->w != NULL);
 
-        const struct vec2 max = win_max(b->w);
+	const struct vec2 max = win_max(b->w);
 
-        b->grid = calloc((u32)max.row, sizeof(struct cell*));
-        if (b->grid == NULL)
-                return ERR;
+	b->grid = calloc((u32)max.row, sizeof(struct cell*));
+	if (b->grid == NULL)
+		return ERR;
 
-        for (i32 row = 0; row < max.row; row++) {
-                b->grid[row] = calloc((u32)max.col, sizeof(struct cell));
-                if (b->grid[row] == NULL)
-                        return ERR;
-        }
+	for (i32 row = 0; row < max.row; row++) {
+		b->grid[row] = calloc((u32)max.col, sizeof(struct cell));
+		if (b->grid[row] == NULL)
+			return ERR;
+	}
 
-        board_clear(b);
+	board_clear(b);
 
-        return OK;
+	return OK;
 }
 
 void board_destroy(struct board* const b)
 {
-        assert(b != NULL);
-        assert(b->grid != NULL);
+	assert(b != NULL);
+	assert(b->grid != NULL);
 
-        free(b->grid);
+	free(b->grid);
 }
 
 static void lower_down(struct board* const b, i32 row)
 {
-        struct vec2 p = { row, 1 };
+	struct vec2 p = { row, 1 };
 
-        const struct vec2 max  = win_max(b->w);
-        const struct vec2 down = { -1, 0 };
+	const struct vec2 max  = win_max(b->w);
+	const struct vec2 down = { -1, 0 };
 
-        for (; p.row > 2; p.row--)
-                for (p.col = 1; p.col < max.col; p.col++)
-                        *board_at(b, p) = board_atc(b, vec2_add_v(p, down));
+	for (; p.row > 2; p.row--)
+		for (p.col = 1; p.col < max.col; p.col++)
+			*board_at(b, p) = board_atc(b, vec2_add_v(p, down));
 }
 
 u8 board_erase_rows(struct board* const b)
 {
-        assert(b != NULL);
-        assert(b->grid != NULL);
-        assert(b->w != NULL);
+	assert(b != NULL);
+	assert(b->grid != NULL);
+	assert(b->w != NULL);
 
-        u8 num_erased = 0;
+	u8 num_erased = 0;
 
-        struct vec2 p         = { 1, 1 };
-        const struct vec2 max = win_max(b->w);
+	struct vec2 p         = { 1, 1 };
+	const struct vec2 max = win_max(b->w);
 
-        for (; p.row < max.row; p.row++) {
-                for (p.col = 1; (p.col < max.col) && board_is(b, p); p.col++)
-                        continue;
+	for (; p.row < max.row; p.row++) {
+		for (p.col = 1; (p.col < max.col) && board_is(b, p); p.col++)
+			continue;
 
-                if (p.col == max.col) {
-                        lower_down(b, p.row);
-                        num_erased++;
-                }
-        }
+		if (p.col == max.col) {
+			lower_down(b, p.row);
+			num_erased++;
+		}
+	}
 
-        return num_erased;
+	return num_erased;
 }
 
 int board_render(const struct board* const b)
 {
-        assert(b != NULL);
-        assert(b->grid != NULL);
-        assert(b->w != NULL);
+	assert(b != NULL);
+	assert(b->grid != NULL);
+	assert(b->w != NULL);
 
-        int err = OK;
+	int err = OK;
 
-        struct vec2 p         = { 1, 1 };
-        const struct vec2 max = win_max(b->w);
+	struct vec2 p         = { 1, 1 };
+	const struct vec2 max = win_max(b->w);
 
-        for (; p.row < max.row; p.row++) {
-                for (p.col = 1; p.col < max.col; p.col++) {
-                        err = board_put(b, p);
-                        if (err < 0)
-                                return err;
-                }
-        }
+	for (; p.row < max.row; p.row++) {
+		for (p.col = 1; p.col < max.col; p.col++) {
+			err = board_put(b, p);
+			if (err < 0)
+				return err;
+		}
+	}
 
-        return err;
+	return err;
 }
 
 /**** END OF FILE ****/
