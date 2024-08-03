@@ -3,6 +3,8 @@
 Yet another classic [tetris](https://en.wikipedia.org/wiki/Tetris) clone.
 Dead simple, no bells and whistles, made out of boredom.
 
+![](support/github/play.gif)
+
 ## Dependencies
 
 - `cmake` and `make` for building
@@ -27,3 +29,7 @@ make debug=y
 ```console
 make run
 ```
+## Configuration
+
+Game is mostly configured by constants in `app/src/config.h`. You can change
+some stuff there and recompile the program to see results.
