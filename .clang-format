@@ -77,7 +77,7 @@ IncludeCategories:
 IncludeIsMainRegex:                                 '(_test)?$'
 IndentCaseLabels:                                   false
 IndentPPDirectives:                                 None
-IndentWidth:                                        8
+IndentWidth:                                        4
 IndentWrappedFunctionNames:                         false
 JavaScriptQuotes:                                   Leave
 JavaScriptWrapImports:                              true
@@ -122,6 +122,6 @@ Standard:                                           c++17
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
-TabWidth:                                           8
+TabWidth:                                           4
 UseTab:                                             ForContinuationAndIndentation
 ...

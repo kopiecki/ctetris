@@ -177,11 +177,11 @@ static void swap_tets(struct tet* const on_main, struct tet* const on_sec)
 static inline int print_score(u32 cnt)
 {
 	int err = mvwprintw(
-		wins[wgame],
-		dims[wgame].row - 1,
-		dims[wgame].col / 2 - 4,
-		"score: %d",
-		cnt);
+			wins[wgame],
+			dims[wgame].row - 1,
+			dims[wgame].col / 2 - 4,
+			"score: %d",
+			cnt);
 	if (err < 0)
 		return err;
 
@@ -201,7 +201,7 @@ static int update(void)
 	return err;
 }
 
-static int clear_all()
+static int clear_all(void)
 {
 	int err = OK;
 
@@ -223,7 +223,7 @@ static int clear_all()
 	return err;
 }
 
-static void cleanup()
+static void cleanup(void)
 {
 	destroy_wins();
 	destroy_boards();
@@ -240,10 +240,7 @@ static int put_info(void)
 		return err;
 
 	err = mvwprintw(
-		wins[wnext],
-		dims[wnext].row - 1,
-		dims[wnext].col / 2 - 2,
-		"next");
+			wins[wnext], dims[wnext].row - 1, dims[wnext].col / 2 - 2, "next");
 	if (err < 0)
 		return err;
 
