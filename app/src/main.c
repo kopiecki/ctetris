@@ -5,13 +5,15 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <assert.h>
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
 
-#include "board.h"
 #include "common.h"
 #include "config.h"
+#include "ncge/board.h"
+#include "ncge/ncge.h"
 #include "tet.h"
 
 static WINDOW* wins[num_wins];
@@ -21,6 +23,42 @@ static const u8 colors[] = {
 	COLOR_CYAN,  COLOR_YELLOW, COLOR_BLUE,  COLOR_MAGENTA,
 	COLOR_GREEN, COLOR_RED,    COLOR_WHITE, COLOR_BLACK,
 };
+
+static void lower_down(struct board* const b, i32 row)
+{
+	struct vec2 p = { row, 1 };
+
+	const struct vec2 max  = win_max(b->w);
+	const struct vec2 down = { -1, 0 };
+
+	for (; p.row > 2; p.row--)
+		for (p.col = 1; p.col < max.col; p.col++)
+			board_at(b, p) = board_at(b, vec2_add_v(p, down));
+}
+
+u8 board_erase_rows(struct board* const b)
+{
+	assert(b != NULL);
+	assert(b->grid != NULL);
+	assert(b->w != NULL);
+
+	u8 num_erased = 0;
+
+	struct vec2 p         = { 1, 1 };
+	const struct vec2 max = win_max(b->w);
+
+	for (; p.row < max.row; p.row++) {
+		for (p.col = 1; (p.col < max.col) && board_is(b, p); p.col++)
+			continue;
+
+		if (p.col == max.col) {
+			lower_down(b, p.row);
+			num_erased++;
+		}
+	}
+
+	return num_erased;
+}
 
 static WINDOW* create_win(struct vec2 dim, struct vec2 pos, bool border)
 {
@@ -139,7 +177,7 @@ static int create_boards(void)
 	int err = OK;
 	for (u8 i = 0; i < num_boards; i++) {
 		boards[i] = (struct board) { .grid = NULL, .w = wins[i] };
-		err       = board_create(&boards[i]);
+		err       = board_init(&boards[i], wins[i]);
 		if (err < 0)
 			return err;
 	}

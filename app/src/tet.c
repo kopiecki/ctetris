@@ -9,9 +9,10 @@
 
 #include <assert.h>
 #include <curses.h>
+#include <stdlib.h>
 
-#include "board.h"
-#include "common.h"
+#include "ncge/board.h"
+#include "ncge/types.h"
 #include "tet_srs_lut.h"
 
 #define COL_STEP 2
@@ -19,6 +20,11 @@
 
 #define TET_INIT_COL 20
 #define TET_INIT_ROW 1
+
+inline static int get_rn(int lower, int upper)
+{
+	return (rand() % (upper - lower + 1)) + lower;
+}
 
 static inline bool is(const struct tet* const t, struct vec2 p)
 {
@@ -30,10 +36,7 @@ static inline struct cell cell(enum color c)
 	if (c == color_none)
 		return CELL_EMPTY;
 
-	return (struct cell) {
-		.ch = BLOCK,
-		.c  = c,
-	};
+	return cell_create(BLOCK, c);
 }
 
 static void fill_with(
@@ -46,7 +49,7 @@ static void fill_with(
 	assert(b != NULL);
 
 	if (is(t, p))
-		*board_at(b, vec2_add_v(p, t->o)) = cell(c);
+		board_at(b, vec2_add_v(p, t->o)) = cell(c);
 }
 
 static inline bool in_bounds(

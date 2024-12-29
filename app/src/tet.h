@@ -8,7 +8,7 @@
 #ifndef TET_H_INCLUDED
 #define TET_H_INCLUDED
 
-#include "board.h"
+#include "ncge/board.h"
 
 /**
  * @brief Tetromino type
@@ -43,6 +43,12 @@ struct tet {
 	struct vec2 o;
 	chtype ch;
 };
+
+static inline bool board_is(const struct board* const b, struct vec2 p)
+{
+	struct cell cl = b->grid[p.row][p.col];
+	return (cl.c != CELL_EMPTY.c) && (cl.ch != CELL_EMPTY.ch);
+}
 
 /**
  * @brief Draw tetromino on the board
