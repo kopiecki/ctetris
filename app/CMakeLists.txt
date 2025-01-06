@@ -1,5 +1,5 @@
 set(target ${PROJECT_NAME})
-set(sources src/tet.c src/main.c)
+set(sources src/tet.c src/game.c src/main.c)
 
 add_executable(${target} ${sources})
 

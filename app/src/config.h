@@ -11,7 +11,7 @@
 #include <complex.h>
 #include <stdbool.h>
 
-#include "common.h"
+#include "ncge/ncge.h"
 
 #define DELAY_INIT INT16_MAX
 #define DELAY_STEP (1 << 9)
@@ -22,10 +22,9 @@
  * @brief Type of windows that ctetris game consists of
  */
 enum win_tp {
-	wgame,
-	wnext,
-	wctrl,
-	wprompt,
+	win_tp_main = 0,
+	win_tp_next,
+	win_tp_ctrl,
 	num_wins,
 };
 
@@ -34,54 +33,60 @@ enum win_tp {
  *
  */
 enum board_tp {
-	bgame,
-	bnext,
+	board_tp_game = 0,
+	board_tp_next,
 	num_boards,
 };
 
-/**
- * @brief Window dimensions
- */
-static const struct vec2 dims[] = {
-	[wgame]   = { 30, 30 },
-	[wnext]   = { 6, 10 },
-	[wctrl]   = { 10, 25 },
-	[wprompt] = { 10, 25 },
-};
-
-/**
- * @brief Window positions
- */
-static const struct vec2 poses[] = {
-	[wgame]   = { 0, 0 },
-	[wnext]   = { 0, dims[wgame].col + 6 },
-	[wctrl]   = { dims[wnext].row + 1, dims[wgame].col + 1 },
-	[wprompt] = { dims[wnext].row + dims[wctrl].row + 1, dims[wgame].col + 1 }
-};
-
-/**
- * @brief Window borders indicators
- */
-static const bool borders[] = {
-	[wgame]   = true,
-	[wnext]   = true,
-	[wctrl]   = false,
-	[wprompt] = false,
+static const struct win_cfg win_configs[] = {
+	[win_tp_main] = {
+		.dim = {
+			.row = 30,
+			.col = 30
+		},
+		.pos = {
+			.row = 0,
+			.col = 0,
+		},
+		.border = true
+	},
+	[win_tp_next] = {
+		.dim = {
+			.row = 6,
+			.col = 10
+		},
+		.pos = {
+			.row = 0,
+			.col = 30 + 6,
+		},
+		.border = true
+	},
+	[win_tp_ctrl] = {
+		.dim = {
+			.row = 20,
+			.col = 25
+		},
+		.pos = {
+			.row = 6 + 1,
+			.col = 30 + 1,
+		},
+		.border = false,
+	}
 };
 
 /**
  * @brief Controls text
  */
 static const char* ctrl_txt =
-	"controls\n"
-	"---------------------\n"
-	"a/left/h: move left\n"
-	"d/right/l: move right\n"
-	"w/up/j: rotate\n"
-	"space: hard drop\n"
-	"+/-: change speed\n"
-	"q/ESC/ctrl+c: quit\n"
-	"---------------------\n";
+		"controls\n"
+		"---------------------\n"
+		"a/left/h: move left\n"
+		"d/right/l: move right\n"
+		"w/up/j: rotate\n"
+		"space: hard drop\n"
+		"+/-: change speed\n"
+		"q/ESC/ctrl+c: quit\n"
+		"---------------------\n";
 
 #endif /* CFG_H_INCLUDED_ */
 
