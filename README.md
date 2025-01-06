@@ -9,10 +9,16 @@ Dead simple, no bells and whistles, made out of boredom.
 
 - `cmake` and `make` for building
 - `ncurses` for terminal stuff
+- [ncge](https://github.com/kopiecki/ncge) git submodule
 
 ## Bulding
 
 Tested only on GNU/Linux.
+
+Update submodule:
+```console
+git submodule update --init
+```
 
 Release build:
 ```console
