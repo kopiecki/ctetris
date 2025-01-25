@@ -38,6 +38,9 @@ enum board_tp {
 	num_boards,
 };
 
+/**
+ * @brief Windows configuration
+ */
 static const struct win_cfg win_configs[] = {
 	[win_tp_main] = {
 		.dim = {
@@ -75,7 +78,7 @@ static const struct win_cfg win_configs[] = {
 };
 
 /**
- * @brief Controls text
+ * @brief Game controls information text
  */
 static const char* ctrl_txt =
 		"controls\n"

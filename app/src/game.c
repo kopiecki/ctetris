@@ -76,11 +76,11 @@ static inline int put_title(WINDOW* const w)
 static inline int put_score(WINDOW* const w, u32 score)
 {
 	return mvwprintw(
-			w,
-			win_configs[win_tp_main].dim.row - 1,
-			win_configs[win_tp_main].dim.col / 2 - 4,
-			"score: %d",
-			score);
+		w,
+		win_configs[win_tp_main].dim.row - 1,
+		win_configs[win_tp_main].dim.col / 2 - 4,
+		"score: %d",
+		score);
 }
 
 static inline int put_info(struct ncge* const ctx)
@@ -94,10 +94,10 @@ static inline int put_info(struct ncge* const ctx)
 
 	w   = ncge_get_win(ctx, win_tp_next);
 	err = mvwprintw(
-			w,
-			win_configs[win_tp_next].dim.row - 1,
-			win_configs[win_tp_next].dim.col / 2 - 2,
-			"next");
+		w,
+		win_configs[win_tp_next].dim.row - 1,
+		win_configs[win_tp_next].dim.col / 2 - 2,
+		"next");
 	if (err < 0)
 		return err;
 
@@ -273,7 +273,7 @@ static int on_frame(struct ncge* const ctx)
 	return 0;
 }
 
-static struct ncge_ops ops = {
+static const struct ncge_ops ops = {
 	.on_frame = on_frame,
 	.state_ops = {
 		[state_init] = on_init,

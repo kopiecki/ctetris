@@ -11,6 +11,14 @@
 #include "ncge/ncge.h"
 #include "tet.h"
 
+/**
+ * struct game - Tetris game representation
+ * @base:  Pointer to base class. In this case it is `ncge` layer.
+ * @curr:  Current tetromino on game board.
+ * @next:  Next tetromino to be displayed on game board.
+ * @fell:  Flag indicating that tetromino successfully fell on the board.
+ * @score: Game score.
+ */
 struct game {
 	struct ncge base;
 	struct tet curr;
