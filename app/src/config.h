@@ -1,15 +1,15 @@
-/*
- * @file   cfg.h
+/**
+ * @file   config.h
+ * @brief  Configuration file
+ * @author Daniel Kopiecki <daniel.kopiecki@protonmail.com>
+ * @date   2025-01-28
  *
- * SPDX-FileCopyrightText: 2024 Daniel Kopiecki
- * SPDX-License-Identifier: MIT
+ * @copyright Copyright (c) 2025 Daniel Kopiecki
+ * @par       License: MIT
  */
 
-#ifndef CFG_H_INCLUDED_
-#define CFG_H_INCLUDED_
-
-#include <complex.h>
-#include <stdbool.h>
+#ifndef CONFIG_H_INCLUDED_
+#define CONFIG_H_INCLUDED_
 
 #include "ncge/ncge.h"
 
@@ -22,10 +22,10 @@
  * @brief Type of windows that ctetris game consists of
  */
 enum win_tp {
-	win_tp_main = 0,
-	win_tp_next,
-	win_tp_ctrl,
-	num_wins,
+	WIN_MAIN = 0,
+	WIN_NEXT,
+	WIN_CTRL,
+	NUM_WINS,
 };
 
 /**
@@ -33,16 +33,16 @@ enum win_tp {
  *
  */
 enum board_tp {
-	board_tp_game = 0,
-	board_tp_next,
-	num_boards,
+	BOARD_GAME = 0,
+	BOARD_NEXT,
+	NUM_BOARDS,
 };
 
 /**
  * @brief Windows configuration
  */
 static const struct win_cfg win_configs[] = {
-	[win_tp_main] = {
+	[WIN_MAIN] = {
 		.dim = {
 			.row = 30,
 			.col = 30
@@ -53,7 +53,7 @@ static const struct win_cfg win_configs[] = {
 		},
 		.border = true
 	},
-	[win_tp_next] = {
+	[WIN_NEXT] = {
 		.dim = {
 			.row = 6,
 			.col = 10
@@ -64,7 +64,7 @@ static const struct win_cfg win_configs[] = {
 		},
 		.border = true
 	},
-	[win_tp_ctrl] = {
+	[WIN_CTRL] = {
 		.dim = {
 			.row = 20,
 			.col = 25
@@ -91,6 +91,6 @@ static const char* ctrl_txt =
 		"q/ESC/ctrl+c: quit\n"
 		"---------------------\n";
 
-#endif /* CFG_H_INCLUDED_ */
+#endif /* CONFIG_H_INCLUDED_ */
 
 /**** END OF FILE ****/

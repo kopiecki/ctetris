@@ -1,12 +1,12 @@
-/*
+/**
  * @file   tet_srs_lut.h
+ * @brief  Tetromino metrics LUT
+ * @author Daniel Kopiecki <daniel.kopiecki@protonmail.com>
+ * @date   2025-01-28
  *
- * SPDX-FileCopyrightText: 2024 Daniel Kopiecki
- * SPDX-License-Identifier: MIT
+ * @copyright Copyright (c) 2025 Daniel Kopiecki
+ * @par       License: MIT
  */
-
-#ifndef TET_SRS_LUT_H_INCLUDED_
-#define TET_SRS_LUT_H_INCLUDED_
 
 #include "tet.h"
 
@@ -21,7 +21,7 @@
  * (https://strategywiki.org/wiki/Tetris/Rotation_systems)
  */
 static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
-	[tet_tp_i] =
+	[TET_I] =
 	{
 		{
 			{ B(0), B(0), B(1), B(0) },
@@ -48,7 +48,7 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 			{ B(0), B(0), B(0), B(0) },
 		},
 	},
-	[tet_tp_o] =
+	[TET_O] =
 	{
 		{
 			{ B(0), B(1), B(1), B(0) },
@@ -75,7 +75,7 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 			{ B(0), B(0), B(0), B(0) },
 		},
 	},
-	[tet_tp_l] =
+	[TET_L] =
 	{
 		{
 			{ B(0), B(1), B(0), B(0) },
@@ -102,7 +102,7 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 			{ B(0), B(0), B(0), B(0) },
 		},
 	},
-	[tet_tp_j] =
+	[TET_J] =
 	{
 		{
 			{ B(0), B(0), B(1), B(0) },
@@ -129,7 +129,7 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 			{ B(0), B(0), B(0), B(0) },
 		},
 	},
-	[tet_tp_t] =
+	[TET_T] =
 	{
 		{
 			{ B(0), B(0), B(0), B(0) },
@@ -156,7 +156,7 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 			{ B(0), B(0), B(0), B(0) },
 		},
 	},
-	[tet_tp_s] =
+	[TET_S] =
 	{
 		{
 			{ B(0), B(0), B(0), B(0) },
@@ -183,7 +183,7 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 			{ B(0), B(0), B(0), B(0) },
 		},
 	},
-	[tet_tp_z] =
+	[TET_Z] =
 	{
 		{
 			{ B(1), B(1), B(0), B(0) },
@@ -211,7 +211,5 @@ static const bool tet_srs_lut[][NUM_ROTS][NUM_ROWS][NUM_COLS] = {
 		},
 	},
 };
-
-#endif /* TET_SRS_LUT_H_INCLUDED_ */
 
 /**** END OF FILE ****/

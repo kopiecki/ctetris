@@ -56,12 +56,12 @@ static void swap_tets(struct ncge* const ctx)
 
 	struct game* const g = child_of(ctx);
 
-	WINDOW* w = ncge_get_win(ctx, win_tp_main);
+	WINDOW* w = ncge_get_win(ctx, WIN_MAIN);
 
 	g->curr       = g->next;
 	g->curr.o.col = getmaxx(w) / 2 - 2;
 
-	struct board* b = ncge_get_board(ctx, board_tp_next);
+	struct board* b = ncge_get_board(ctx, BOARD_NEXT);
 
 	tet_erase(&g->next, b);
 	g->next = tet_spawn(b);
@@ -70,15 +70,15 @@ static void swap_tets(struct ncge* const ctx)
 
 static inline int put_title(WINDOW* const w)
 {
-	return mvwprintw(w, 0, win_configs[win_tp_main].dim.col / 2 - 4, "ctetris");
+	return mvwprintw(w, 0, win_configs[WIN_MAIN].dim.col / 2 - 4, "ctetris");
 }
 
 static inline int put_score(WINDOW* const w, u32 score)
 {
 	return mvwprintw(
 		w,
-		win_configs[win_tp_main].dim.row - 1,
-		win_configs[win_tp_main].dim.col / 2 - 4,
+		win_configs[WIN_MAIN].dim.row - 1,
+		win_configs[WIN_MAIN].dim.col / 2 - 4,
 		"score: %d",
 		score);
 }
@@ -87,16 +87,16 @@ static inline int put_info(struct ncge* const ctx)
 {
 	assert(ctx != NULL);
 
-	WINDOW* w = ncge_get_win(ctx, win_tp_ctrl);
+	WINDOW* w = ncge_get_win(ctx, WIN_CTRL);
 	int err   = mvwprintw(w, 0, 0, "%s", ctrl_txt);
 	if (err < 0)
 		return err;
 
-	w   = ncge_get_win(ctx, win_tp_next);
+	w   = ncge_get_win(ctx, WIN_NEXT);
 	err = mvwprintw(
 		w,
-		win_configs[win_tp_next].dim.row - 1,
-		win_configs[win_tp_next].dim.col / 2 - 2,
+		win_configs[WIN_NEXT].dim.row - 1,
+		win_configs[WIN_NEXT].dim.col / 2 - 2,
 		"next");
 	if (err < 0)
 		return err;
@@ -114,12 +114,12 @@ static void init_tets(struct ncge* const ctx)
 	assert(ctx != NULL);
 
 	struct game* const g = child_of(ctx);
-	struct board* b      = ncge_get_board(ctx, board_tp_game);
+	struct board* b      = ncge_get_board(ctx, BOARD_GAME);
 
 	board_clear(b);
 	g->curr = tet_spawn(b);
 
-	b = ncge_get_board(ctx, board_tp_next);
+	b = ncge_get_board(ctx, BOARD_NEXT);
 
 	board_clear(b);
 	g->next = tet_spawn(b);
@@ -134,7 +134,7 @@ static int on_lose(struct ncge* const ctx)
 	assert(ctx != NULL);
 
 	struct game* const g = child_of(ctx);
-	WINDOW* const w      = ncge_get_win(ctx, win_tp_ctrl);
+	WINDOW* const w      = ncge_get_win(ctx, WIN_CTRL);
 
 	int err = put_end_msg(w, g->score);
 	if (err < 0)
@@ -142,11 +142,11 @@ static int on_lose(struct ncge* const ctx)
 
 	switch (getch()) {
 	case 'y':
-		ctx->state = state_init;
+		ctx->state = STATE_INIT;
 		break;
 	case '\n':
 	case 'n':
-		ctx->state = state_exit;
+		ctx->state = STATE_EXIT;
 		break;
 	default:
 		break;
@@ -167,7 +167,7 @@ static int on_play(struct ncge* const ctx)
 	assert(ctx != NULL);
 
 	struct game* const g  = child_of(ctx);
-	struct board* const b = ncge_get_board(ctx, board_tp_game);
+	struct board* const b = ncge_get_board(ctx, BOARD_GAME);
 
 	bool moved = true;
 
@@ -175,17 +175,17 @@ static int on_play(struct ncge* const ctx)
 	case 's':
 	case 'j':
 	case KEY_DOWN:
-		moved = tet_move(&g->curr, b, dir_down);
+		moved = tet_move(&g->curr, b, DIR_DOWN);
 		break;
 	case 'a':
 	case 'h':
 	case KEY_LEFT:
-		tet_move(&g->curr, b, dir_left);
+		tet_move(&g->curr, b, DIR_LEFT);
 		break;
 	case 'd':
 	case 'l':
 	case KEY_RIGHT:
-		tet_move(&g->curr, b, dir_right);
+		tet_move(&g->curr, b, DIR_RIGHT);
 		break;
 	case 'w':
 	case 'k':
@@ -204,7 +204,7 @@ static int on_play(struct ncge* const ctx)
 		break;
 	case 'q':
 	case KEY_ESC:
-		ctx->state = state_exit;
+		ctx->state = STATE_EXIT;
 		break;
 	default:
 		break;
@@ -214,7 +214,7 @@ static int on_play(struct ncge* const ctx)
 
 	if (!g->fell) {
 		if (tet_fellout(&g->curr)) {
-			ctx->state = state_lose;
+			ctx->state = STATE_LOSE;
 			return 0;
 		}
 
@@ -236,7 +236,7 @@ static int on_init(struct ncge* const ctx)
 	assert(ctx != NULL);
 
 	struct game* const g = child_of(ctx);
-	WINDOW* w            = ncge_get_win(ctx, win_tp_main);
+	WINDOW* w            = ncge_get_win(ctx, WIN_MAIN);
 
 	int err = put_score(w, g->score);
 	if (err < 0)
@@ -246,7 +246,7 @@ static int on_init(struct ncge* const ctx)
 	if (err < 0)
 		return err;
 
-	w = ncge_get_win(ctx, win_tp_ctrl);
+	w = ncge_get_win(ctx, WIN_CTRL);
 
 	wclear(w);
 
@@ -256,7 +256,7 @@ static int on_init(struct ncge* const ctx)
 
 	init_tets(ctx);
 
-	ctx->state = state_play;
+	ctx->state = STATE_PLAY;
 
 	return 0;
 }
@@ -266,9 +266,9 @@ static int on_frame(struct ncge* const ctx)
 	assert(ctx != NULL);
 
 	struct game* const g  = child_of(ctx);
-	struct board* const b = ncge_get_board(ctx, board_tp_game);
+	struct board* const b = ncge_get_board(ctx, BOARD_GAME);
 
-	g->fell = tet_move(&g->curr, b, dir_down);
+	g->fell = tet_move(&g->curr, b, DIR_DOWN);
 
 	return 0;
 }
@@ -276,10 +276,10 @@ static int on_frame(struct ncge* const ctx)
 static const struct ncge_ops ops = {
 	.on_frame = on_frame,
 	.state_ops = {
-		[state_init] = on_init,
-		[state_play] = on_play,
-		[state_lose] = on_lose,
-		[state_exit] = on_leave,
+		[STATE_INIT] = on_init,
+		[STATE_PLAY] = on_play,
+		[STATE_LOSE] = on_lose,
+		[STATE_EXIT] = on_leave,
 	},
 };
 
@@ -293,19 +293,24 @@ int game_run(struct game* const g)
 	if (err < 0)
 		return err;
 
-	for (u8 i = 0; i < num_wins; i++) {
+	for (u8 i = 0; i < NUM_WINS; i++) {
 		err = ncge_create_win(ctx, &win_configs[i]);
 		if (err < 0)
-			return err;
+			goto ncge_free;
 	}
 
-	for (u8 i = 0; i < num_boards; i++) {
+	for (u8 i = 0; i < NUM_BOARDS; i++) {
 		err = ncge_create_board(ctx, i);
 		if (err < 0)
-			return err;
+			goto ncge_free;
 	}
 
 	return ncge_run(ctx);
+
+ncge_free:
+	ncge_destroy(&g->base);
+
+	return err;
 }
 
 /**** END OF FILE ****/

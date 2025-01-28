@@ -1,8 +1,11 @@
-/*
+/**
  * @file   tet.c
+ * @brief  Tetromino representation
+ * @author Daniel Kopiecki <daniel.kopiecki@protonmail.com>
+ * @date   2025-01-28
  *
- * SPDX-FileCopyrightText: 2024 Daniel Kopiecki
- * SPDX-License-Identifier: MIT
+ * @copyright Copyright (c) 2025 Daniel Kopiecki
+ * @par       License: MIT
  */
 
 #include "tet.h"
@@ -33,17 +36,14 @@ static inline bool is(const struct tet* const t, struct vec2 p)
 
 static inline struct cell cell(enum color c)
 {
-	if (c == color_none)
+	if (c == COL_NONE)
 		return CELL_EMPTY;
 
 	return cell_create(BLOCK, c);
 }
 
 static void fill_with(
-		const struct tet* const t,
-		struct board* const b,
-		struct vec2 p,
-		enum color c)
+	const struct tet* const t, struct board* const b, struct vec2 p, enum color c)
 {
 	assert(t != NULL);
 	assert(b != NULL);
@@ -53,7 +53,7 @@ static void fill_with(
 }
 
 static inline bool in_bounds(
-		const struct tet* const t, const struct board* const b, struct vec2 p)
+	const struct tet* const t, const struct board* const b, struct vec2 p)
 {
 	const struct vec2 dpos = vec2_add_v(p, t->o);
 	return !(is(t, p) && (!board_in(b, dpos) || board_is(b, dpos)));
@@ -84,22 +84,22 @@ static void move_by_dir(struct tet* const t, int d)
 	assert(t != NULL);
 
 	switch (d) {
-	case dir_down:
+	case DIR_DOWN:
 		t->o.row += ROW_STEP;
 		break;
-	case dir_right:
+	case DIR_RIGHT:
 		t->o.col += COL_STEP;
 		break;
-	case dir_left:
+	case DIR_LEFT:
 		t->o.col -= COL_STEP;
 		break;
-	case ~dir_down:
+	case ~DIR_DOWN:
 		t->o.row -= ROW_STEP;
 		break;
-	case ~dir_left:
+	case ~DIR_LEFT:
 		t->o.col += COL_STEP;
 		break;
-	case ~dir_right:
+	case ~DIR_RIGHT:
 		t->o.col -= COL_STEP;
 		break;
 	default:
@@ -126,7 +126,7 @@ void tet_erase(const struct tet* const t, struct board* const b)
 	struct vec2 p = { 0, 0 };
 	for (; p.row < NUM_ROWS; p.row++)
 		for (p.col = 0; p.col < NUM_COLS; p.col++)
-			fill_with(t, b, p, color_none);
+			fill_with(t, b, p, COL_NONE);
 }
 
 bool tet_fellout(const struct tet* const t)
@@ -178,16 +178,16 @@ void tet_drop(struct tet* const t, struct board* const b)
 	assert(t != NULL);
 	assert(b != NULL);
 
-	while (tet_move(t, b, dir_down))
+	while (tet_move(t, b, DIR_DOWN))
 		;
 }
 
 struct tet tet_spawn(const struct board* const b)
 {
 	return (struct tet) {
-		.tp  = (enum tet_tp)get_rn(tet_tp_i, tet_tp_z),
-		.rot = rot_none,
-		.c   = (enum color)get_rn(color_cyan, color_red),
+		.tp  = (enum tet_tp)get_rn(TET_I, TET_Z),
+		.rot = ROT_NONE,
+		.c   = (enum color)get_rn(COL_CYAN, COL_RED),
 		.o   = { .row = 1, .col = getmaxx(b->w) / 2 - 4 },
 	};
 }

@@ -2,6 +2,7 @@ project   := ctetris
 cores     := $(shell nproc)
 root_dir  := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 build_dir := _build
+docs_dir  := _docs
 bin_dir   := $(build_dir)/app
 debug     ?= y
 top       := $(abspath $(dir $(firstword $(MAKEFILE_LIST))))
@@ -31,6 +32,12 @@ build: | .mk-build-dir
 	$(call log_info,"DONE: $@")
 .PHONY: build
 
+docs: | .mk-docs-dir
+	$(call log_info,"Building documentation...")
+	$(at) doxygen support/docs/doxyfile
+	$(call log_info,"DONE: $@")
+.PHONY: docs
+
 run:
 	$(call log_info,"Running $(project)")
 	$(at) ./$(bin_dir)/$(project)
@@ -40,6 +47,12 @@ run:
 .mk-build-dir:
 	$(call log_info,"Creating $(project) build directory...")
 	$(at) mkdir -p $(build_dir)
+	$(call log_info,"DONE: $@")
+.PHONY: .mk-build-dir
+
+.mk-docs-dir:
+	$(call log_info,"Creating $(project) documentation directory...")
+	$(at) mkdir -p $(docs_dir)
 	$(call log_info,"DONE: $@")
 .PHONY: .mk-build-dir
 
